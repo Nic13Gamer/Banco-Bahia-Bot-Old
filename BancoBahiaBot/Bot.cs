@@ -17,7 +17,7 @@ namespace BancoBahiaBot
 
             client = new DiscordSocketClient();
 
-            await client.LoginAsync(TokenType.Bot, "Nzc3Njc5NTk2OTQ1OTMyMjg4.X7G8kA.dPZ4MF3Uc5r-p0nzoBwn3CqljeI");
+            await client.LoginAsync(TokenType.Bot, "TOKEN");
             await client.StartAsync();
 
             commandHandler = new CommandHandler(client);
