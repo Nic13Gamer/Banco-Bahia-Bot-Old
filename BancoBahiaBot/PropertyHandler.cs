@@ -58,6 +58,27 @@ namespace BancoBahiaBot
 
             return null;
         }
+
+        public static UserProperty GetUserProperty(string property, string id)
+        {
+            User user = UserHandler.GetUser(id);
+            Property chosenProperty = GetProperty(property);
+
+            if (chosenProperty == null)
+                return null;
+
+            UserProperty userProperty = null;
+            foreach (UserProperty _userProperty in user.properties)
+            {
+                if (_userProperty.property == chosenProperty)
+                {
+                    userProperty = _userProperty;
+                    break;
+                }
+            }
+
+            return userProperty;
+        }
     }
 
     public class Property

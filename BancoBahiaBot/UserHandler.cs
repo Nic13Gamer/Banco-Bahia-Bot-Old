@@ -21,10 +21,10 @@ namespace BancoBahiaBot
             JSONObject json = (JSONObject)JSON.Parse(rawJson);
             
             foreach (JSONObject user in json["users"])
-                LoadUser(user);
+                LoadUserFromJson(user);
         }
 
-        static void LoadUser(JSONObject user)
+        static void LoadUserFromJson(JSONObject user)
         {
             try
             {

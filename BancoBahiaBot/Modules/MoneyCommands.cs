@@ -99,7 +99,7 @@ namespace BancoBahiaBot.Modules
         [Command("Steal"), Alias("Roubar")]
         public async Task StealCommand(IUser mention)
         {
-            if (mention.IsBot) return;
+            if (mention.IsBot || mention == Context.User) return;
 
             if (UserHandler.GetUser(Context.User.Id.ToString()).money < 2000)
             {
@@ -114,22 +114,17 @@ namespace BancoBahiaBot.Modules
 
             await Task.Delay(3000);
 
+            if (UserHandler.GetUser(mention.Id.ToString()).money < money)
+            {
+                await msg.ModifyAsync(x => x.Content = $"{mention.Mention} não tinha {money} de dinheiro, então, o roubo foi cancelado.");
+            }
+
             if (success)
             {
-                if(UserHandler.GetUser(mention.Id.ToString()).money < money)
-                {
-                    await msg.ModifyAsync(x => x.Content = $"{mention.Mention} não tinha {money} de dinheiro, então, todo seu dinheiro foi roubado! {Context.User.Mention} ganhou {UserHandler.GetUser(mention.Id.ToString()).money}.");
-
-                    UserHandler.GetUser(Context.User.Id.ToString()).money += UserHandler.GetUser(mention.Id.ToString()).money;
-                    UserHandler.GetUser(mention.Id.ToString()).money = 0;
-                }
-                else
-                {
-                    UserHandler.GetUser(Context.User.Id.ToString()).money += money;
-                    UserHandler.GetUser(mention.Id.ToString()).money -= money;
-
-                    await msg.ModifyAsync(x => x.Content = $"{Context.User.Mention} conseguiu roubar {money} de {mention.Mention}! {Context.User.Mention} ganhou {money}.");
-                }
+                UserHandler.GetUser(Context.User.Id.ToString()).money += money;
+                UserHandler.GetUser(mention.Id.ToString()).money -= money;
+                
+                await msg.ModifyAsync(x => x.Content = $"{Context.User.Mention} conseguiu roubar {money} de {mention.Mention}! {Context.User.Mention} ganhou {money}.");
             }
             else
             {

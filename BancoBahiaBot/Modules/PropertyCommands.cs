@@ -11,7 +11,7 @@ namespace BancoBahiaBot.Modules
         public async Task CollectCommand([Remainder]string property)
         {
             User user = UserHandler.GetUser(Context.User.Id.ToString());
-            UserProperty userProperty = GetUserProperty(property);
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, Context.User.Id.ToString());
             if(PropertyHandler.GetProperty(property) == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
@@ -50,7 +50,7 @@ namespace BancoBahiaBot.Modules
         {
             User user = UserHandler.GetUser(Context.User.Id.ToString());
 
-            UserProperty userProperty = GetUserProperty(property);
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, Context.User.Id.ToString());
             if (PropertyHandler.GetProperty(property) == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
@@ -186,7 +186,7 @@ namespace BancoBahiaBot.Modules
             }
 
             string ownedEmoji;
-            UserProperty userProperty = GetUserProperty(property);
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, Context.User.Id.ToString());
             if (userProperty == null)
                 ownedEmoji = ":x:";
             else
@@ -201,38 +201,17 @@ namespace BancoBahiaBot.Modules
             embed.AddField("> **Preço**",
                 $"`${chosenProperty.price}`");
 
-            embed.AddField("> **Descrição**",
+            embed.AddField("> **Requer**",
+                $"`TODO`"); // TODO
+
+            embed.AddField("> Descrição",
                 $"`{chosenProperty.description}`");
 
             embed.AddField("> Informações",
                 $"`Dinheiro por coleta: ${chosenProperty.dailyMoney}`\n" +
                 $"`Taxa por coleta: ${chosenProperty.dailyTax}`");
 
-            embed.AddField("> Requer",
-                $"`TODO`"); // TODO
-
             await Context.Channel.SendMessageAsync(embed: embed.Build());
-        }
-
-        UserProperty GetUserProperty(string property)
-        {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
-            Property chosenProperty = PropertyHandler.GetProperty(property);
-
-            if (chosenProperty == null)
-                return null;
-
-            UserProperty userProperty = null;
-            foreach (UserProperty _userProperty in user.properties)
-            {
-                if (_userProperty.property == chosenProperty)
-                {
-                    userProperty = _userProperty;
-                    break;
-                }
-            }
-
-            return userProperty;
         }
     }
 }
