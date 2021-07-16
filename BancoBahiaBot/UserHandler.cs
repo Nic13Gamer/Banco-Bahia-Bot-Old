@@ -3,7 +3,6 @@ using SimpleJSON;
 using System.Collections.Generic;
 using System.IO;
 using System;
-using System.Linq;
 
 namespace BancoBahiaBot
 {
@@ -39,16 +38,7 @@ namespace BancoBahiaBot
 
                 foreach (JSONObject userPropertyJson in user["properties"])
                 {
-                    Property property = null;
-
-                    foreach (Property _property in PropertyHandler.properties)
-                    {
-                        if (_property.id == userPropertyJson["id"])
-                        {
-                            property = _property;
-                            break;
-                        }
-                    }
+                    Property property = PropertyHandler.GetProperty(userPropertyJson["id"]);
 
                     UserProperty userProperty = new UserProperty
                         (
@@ -60,6 +50,27 @@ namespace BancoBahiaBot
                 }
 
                 newUser.properties = properties.ToArray();
+
+                #endregion
+
+                #region Load Inventory
+
+                List<UserItem> inventory = new List<UserItem>();
+
+                foreach (JSONObject userItemJson in user["inventory"])
+                {
+                    Item item = ItemHandler.GetItem(userItemJson["id"]);
+
+                    UserItem userItem = new UserItem
+                        (
+                            item,
+                            quantity: int.Parse(userItemJson["quantity"])
+                        );
+
+                    inventory.Add(userItem);
+                }
+
+                newUser.inventory = inventory.ToArray();
 
                 #endregion
             }
@@ -104,6 +115,24 @@ namespace BancoBahiaBot
 
                 #endregion
 
+                #region Save Inventory
+
+                JSONObject userInventory = new JSONObject();
+
+                foreach (UserItem item in user.inventory)
+                {
+                    JSONObject userItem = new JSONObject();
+
+                    userItem.Add("id", item.item.id);
+                    userItem.Add("quantity", item.quantity);
+
+                    userInventory.Add(item.item.id, userItem);
+                }
+
+                userArray.Add("inventory", userInventory);
+
+                #endregion
+
                 usersJson.Add(user.id, userArray);
             }
 
@@ -135,31 +164,24 @@ namespace BancoBahiaBot
                     id: id,
                     money: 0,
                     lastDaily: DateTime.Now.AddDays(-1),
-                    properties: new UserProperty[] { }
+                    properties: new UserProperty[] { },
+                    inventory: new UserItem[] { }
                 );
 
             users.Add(user);
             return user;
         }
-
-        public static void AddUserProperty(User user, UserProperty property)
-        {
-            List<UserProperty> userProperties = user.properties.ToList();
-
-            userProperties.Add(property);
-
-            user.properties = userProperties.ToArray();
-        }
     }
 
     class User
     {
-        public User(string id, int money, DateTime lastDaily, UserProperty[] properties)
+        public User(string id, int money, DateTime lastDaily, UserProperty[] properties, UserItem[] inventory)
         {
             this.id = id;
             this.money = money;
             this.lastDaily = lastDaily;
             this.properties = properties;
+            this.inventory = inventory;
         }
 
         public string id;
@@ -167,5 +189,6 @@ namespace BancoBahiaBot
         public DateTime lastDaily;
 
         public UserProperty[] properties;
+        public UserItem[] inventory;
     }
 }

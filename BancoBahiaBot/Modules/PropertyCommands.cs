@@ -28,11 +28,21 @@ namespace BancoBahiaBot.Modules
 
             if (lastCollect.AddHours(12) <= DateTime.Now)
             {
-                int money = userProperty.property.dailyMoney - userProperty.property.dailyTax;
-                reply = $"Você ganhou {userProperty.property.dailyMoney} de dinheiro coletando essa {userProperty.property.name}! E gastou {userProperty.property.dailyTax} de dinheiro em taxas de coleta.";
+                UserItem[] items = userProperty.property.items;
+                string itemString = string.Empty;
 
-                Terminal.WriteLine($"Added {money} of {userProperty.property.id} money to {Context.User} ({Context.User.Id})", Terminal.MessageType.INFO);
-                user.money += money;
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (i != 0) itemString += ", ";
+                    itemString += $"{items[i].quantity} de {items[i].item.name}";
+
+                    ItemHandler.AddItemToUser(user, items[i]);
+                }
+
+                reply = $"Você coletou `{itemString}` coletando essa {userProperty.property.name}! E gastou {userProperty.property.tax} de dinheiro em taxas de coleta.";
+
+                Terminal.WriteLine($"Added | {itemString} | of {userProperty.property.id} to {Context.User} ({Context.User.Id})", Terminal.MessageType.INFO);
+                user.money -= userProperty.property.tax;
                 userProperty.lastCollect = DateTime.Now;
             }
             else
@@ -63,8 +73,6 @@ namespace BancoBahiaBot.Modules
             }
 
             Property chosenProperty = PropertyHandler.GetProperty(property);
-            if(chosenProperty == null)
-                return;
 
             if (user.money < chosenProperty.price)
             {
@@ -80,7 +88,7 @@ namespace BancoBahiaBot.Modules
                     DateTime.Now.AddDays(-1)
                 );
 
-            UserHandler.AddUserProperty(user, newProperty);
+            PropertyHandler.AddUserProperty(user, newProperty);
 
             await Context.Channel.SendMessageAsync($"{chosenProperty.name} comprada com sucesso!");
             Terminal.WriteLine($"{Context.User} ({Context.User.Id}) bought {chosenProperty.id} succesfully!", Terminal.MessageType.INFO);
@@ -201,15 +209,21 @@ namespace BancoBahiaBot.Modules
             embed.AddField("> **Preço**",
                 $"`${chosenProperty.price}`");
 
-            embed.AddField("> **Requer**",
-                $"`TODO`"); // TODO
+            string itemString = string.Empty;
+            for (int i = 0; i < chosenProperty.items.Length; i++)
+            {
+                if (i != 0) itemString += "\n";
+                itemString += $"{chosenProperty.items[i].quantity} de {chosenProperty.items[i].item.name}";
+            }
+
+            embed.AddField("> **Itens por coleta**",
+                $"`{itemString}`");
+
+            embed.AddField("> Informações",
+                $"`Taxas por coleta: ${chosenProperty.tax}`");
 
             embed.AddField("> Descrição",
                 $"`{chosenProperty.description}`");
-
-            embed.AddField("> Informações",
-                $"`Dinheiro por coleta: ${chosenProperty.dailyMoney}`\n" +
-                $"`Taxa por coleta: ${chosenProperty.dailyTax}`");
 
             await Context.Channel.SendMessageAsync(embed: embed.Build());
         }

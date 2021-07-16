@@ -29,33 +29,6 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync(reply);
         }
 
-        // DEBUG (JUST FOR NIC :) )
-        [Command("AddMoney"), Alias("AdicionarDinheiro")]
-        public async Task AddMoneyCommand(string quantity)
-        {
-            if (Context.User.Id != 345680337277288448) return;
-
-            int money;
-            try
-            {
-                money = int.Parse(quantity);
-            }
-            catch (Exception e)
-            {
-                Terminal.WriteLine($"Bot use error {e.Message} by {Context.User} ({Context.User.Id})", Terminal.MessageType.WARN);
-                await Context.Channel.SendMessageAsync("Deve ser um numero inteiro!");
-                return;
-            }
-
-            UserHandler.GetUser(Context.User.Id.ToString()).money += money;
-
-            string reply = $"Adicionado {money} de dinheiro para o ADM :place_of_worship::place_of_worship::place_of_worship:!";
-
-            await Context.Channel.SendMessageAsync(reply);
-            
-            Terminal.WriteLine($"Added {money} of money to {Context.User} ({Context.User.Id})", Terminal.MessageType.INFO);
-        }
-
         [Command("Transfer"), Alias("Pay")]
         public async Task TransferCommand(IUser mention, string quantity)
         {

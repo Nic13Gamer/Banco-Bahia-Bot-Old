@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BancoBahiaBot
 {
@@ -7,50 +8,93 @@ namespace BancoBahiaBot
     {
         public static readonly List<Property> properties = new List<Property>();
 
+        #region Define properties
+
+        #region Bakery
+
+        static readonly UserItem[] bakeryUserItems = new UserItem[]
+        {
+            new UserItem
+                (
+                    item: ItemHandler.GetItem("bread"),
+                    quantity: 35
+                )
+        };
+
         public static readonly Property bakery = new Property
             (
                 id: "bakery",
                 name: "Padaria",
                 description: "Uma padaria que sai pão todo dia.",
-                dailyMoney: 2000,
-                dailyTax: 350,
+                items: bakeryUserItems,
+                tax: 350,
                 price: 10000
             );
 
-        public static readonly Property clothingStore = new Property
+        #endregion
+
+        #region Clothing Factory
+
+        static readonly UserItem[] clothingFactoryUserItems = new UserItem[]
+        {
+            new UserItem
+                (
+                    item: ItemHandler.GetItem("clothes"),
+                    quantity: 50
+                )
+        };
+
+        public static readonly Property clothingFactory = new Property
             (
-                id: "clothingStore",
-                name: "Loja de roupas",
-                description: "Uma variedade bem grande de roupas.",
-                dailyMoney: 5000,
-                dailyTax: 750,
+                id: "clothingFactory",
+                name: "Fábrica de roupas",
+                description: "Fabrica uma variedade bem grande de roupas.",
+                items: clothingFactoryUserItems,
+                tax: 750,
                 price: 25000
             );
 
-        public static readonly Property electronicStore = new Property
+        #endregion
+
+        #region Screen Factory
+
+        static readonly UserItem[] screenFactoryUserItems = new UserItem[]
+        {
+            new UserItem
+                (
+                    item: ItemHandler.GetItem("screen"),
+                    quantity: 25
+                )
+        };
+
+        public static readonly Property screenFactory = new Property
             (
-                id: "electronicStore",
-                name: "Loja de eletronicos",
-                description: "Vende eletrônicos de ultima geração.",
-                dailyMoney: 8000,
-                dailyTax: 1050,
-                price: 35000
+                id: "screenFactory",
+                name: "Fábrica de telas",
+                description: "Fabrica telas de alta resolução.",
+                items: screenFactoryUserItems,
+                tax: 1050,
+                price: 40000
             );
+
+        #endregion
+
+        #endregion
 
         public static void Start()
         {
             properties.Add(bakery);
-            properties.Add(clothingStore);
-            properties.Add(electronicStore);
+            properties.Add(clothingFactory);
+            properties.Add(screenFactory);
         }
 
         public static Property GetProperty(string property)
         {
-            property = property.ToLower();
+            property = RemoveAccents(property.ToLower());
 
             foreach (Property _property in properties)
             {
-                if (_property.id.ToLower() == property || _property.name.ToLower() == property)
+                if (RemoveAccents(_property.id.ToLower()) == property|| RemoveAccents(_property.name.ToLower()) == property)
                 {
                     return _property;
                 }
@@ -79,17 +123,43 @@ namespace BancoBahiaBot
 
             return userProperty;
         }
+
+        public static void AddUserProperty(User user, UserProperty property)
+        {
+            List<UserProperty> userProperties = user.properties.ToList();
+
+            userProperties.Add(property);
+
+            user.properties = userProperties.ToArray();
+        }
+
+        static string RemoveAccents(string text)
+        {
+            var normalizedString = text.Normalize(System.Text.NormalizationForm.FormD);
+            var stringBuilder = new System.Text.StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != System.Globalization.UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(System.Text.NormalizationForm.FormC);
+        }
     }
 
     public class Property
     {
-        public Property(string id, string name, string description, int dailyMoney, int dailyTax, int price)
+        public Property(string id, string name, string description, UserItem[] items, int tax, int price)
         {
             this.id = id;
             this.name = name;
             this.description = description;
-            this.dailyMoney = dailyMoney;
-            this.dailyTax = dailyTax;
+            this.tax = tax;
+            this.items = items;
             this.price = price;
         }
 
@@ -97,8 +167,8 @@ namespace BancoBahiaBot
 
         public string name;
         public string description;
-        public int dailyMoney;
-        public int dailyTax;
+        public int tax;
+        public UserItem[] items;
         public int price;
     }
 

@@ -8,7 +8,7 @@ namespace BancoBahiaBot
     {
         static readonly List<string> consoleLog = new List<string>();
 
-        public static void WriteLine(string msg, MessageType type, ConsoleColor color = ConsoleColor.White)
+        public static void WriteLine(string msg, MessageType type = MessageType.INFO, ConsoleColor color = ConsoleColor.White)
         {
             AddToLog(msg, type);
 
@@ -48,7 +48,7 @@ namespace BancoBahiaBot
                 File.WriteAllText(path, log);
                 WriteLine($"Saved log to {path}!", Terminal.MessageType.INFO);
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 WriteLine(e.Message, MessageType.ERROR);
             }

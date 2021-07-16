@@ -22,6 +22,7 @@ namespace BancoBahiaBot
 
             commandHandler = new CommandHandler(client);
 
+            ItemHandler.Start();
             PropertyHandler.Start();
 
             UserHandler.client = client;
