@@ -5,11 +5,11 @@ namespace BancoBahiaBot
 {
     class ItemHandler
     {
-        public static readonly List<Item> items = new List<Item>();
+        public static readonly List<Item> items = new();
 
         #region Define Items
 
-        public static readonly Item bread = new Item
+        public static readonly Item bread = new
             (
                 id: "bread",
                 name: "Pão",
@@ -17,7 +17,7 @@ namespace BancoBahiaBot
                 sellPrice: 60
             );
 
-        public static readonly Item clothes = new Item
+        public static readonly Item clothes = new
             (
                 id: "clothes",
                 name: "Roupa",
@@ -25,7 +25,7 @@ namespace BancoBahiaBot
                 sellPrice: 100
             );
 
-        public static readonly Item screen = new Item
+        public static readonly Item screen = new
             (
                 id: "screen",
                 name: "Tela",

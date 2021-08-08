@@ -28,7 +28,7 @@ namespace BancoBahiaBot
             var context = new SocketCommandContext(client, msg);
 
             int argPos = 0;
-            if (msg.HasCharPrefix('?', ref argPos))
+            if (msg.HasStringPrefix("?", ref argPos))
             {
                 if (context.User.IsBot) return;
 

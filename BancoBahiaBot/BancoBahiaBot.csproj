@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +10,10 @@
     <PackageReference Include="Discord.Net.Commands" Version="2.4.0" />
     <PackageReference Include="Discord.Net.Core" Version="2.4.0" />
     <PackageReference Include="Discord.Net.WebSocket" Version="2.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>

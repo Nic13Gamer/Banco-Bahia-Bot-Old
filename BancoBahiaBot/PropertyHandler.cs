@@ -6,7 +6,7 @@ namespace BancoBahiaBot
 {
     class PropertyHandler
     {
-        public static readonly List<Property> properties = new List<Property>();
+        public static readonly List<Property> properties = new();
 
         #region Define properties
 
@@ -21,7 +21,7 @@ namespace BancoBahiaBot
                 )
         };
 
-        public static readonly Property bakery = new Property
+        public static readonly Property bakery = new
             (
                 id: "bakery",
                 name: "Padaria",
@@ -44,8 +44,7 @@ namespace BancoBahiaBot
                 )
         };
 
-        public static readonly Property clothingFactory = new Property
-            (
+        public static readonly Property clothingFactory = new(
                 id: "clothingFactory",
                 name: "Fábrica de roupas",
                 description: "Fabrica uma variedade bem grande de roupas.",
@@ -67,7 +66,7 @@ namespace BancoBahiaBot
                 )
         };
 
-        public static readonly Property screenFactory = new Property
+        public static readonly Property screenFactory = new
             (
                 id: "screenFactory",
                 name: "Fábrica de telas",

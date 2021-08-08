@@ -26,6 +26,12 @@ namespace BancoBahiaBot.Modules
             string reply;
             DateTime lastCollect = userProperty.lastCollect;
 
+            if(user.money < userProperty.property.tax)
+            {
+                await Context.Channel.SendMessageAsync("Você não tem dinheiro suficiente para pagar as taxas dessa propriedade!");
+                return;
+            }
+
             if (lastCollect.AddHours(12) <= DateTime.Now)
             {
                 UserItem[] items = userProperty.property.items;
@@ -39,7 +45,7 @@ namespace BancoBahiaBot.Modules
                     ItemHandler.AddItemToUser(user, items[i]);
                 }
 
-                reply = $"Você coletou `{itemString}` coletando essa {userProperty.property.name}! E gastou {userProperty.property.tax} de dinheiro em taxas de coleta.";
+                reply = $"Você ganhou `{itemString}` coletando essa {userProperty.property.name}! Gastando {userProperty.property.tax} de dinheiro em taxas de coleta.";
 
                 Terminal.WriteLine($"Added | {itemString} | of {userProperty.property.id} to {Context.User} ({Context.User.Id})", Terminal.MessageType.INFO);
                 user.money -= userProperty.property.tax;
@@ -53,6 +59,68 @@ namespace BancoBahiaBot.Modules
             }
 
             await Context.Channel.SendMessageAsync(reply);
+        }
+
+        [Command("CollectAll"), Alias("ColetarTudo")]
+        public async Task CollectAllCommand()
+        {
+            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            UserProperty[] userProperties = user.properties;
+
+            if(userProperties.Length == 0)
+            {
+                await Context.Channel.SendMessageAsync("Você não tem propriedades!");
+                return;
+            }
+
+            string itemsString = string.Empty;
+            string propertiesString = string.Empty;
+            int totalTax = 0;
+
+            foreach (UserProperty userProperty in userProperties)
+            {
+                if (user.money < userProperty.property.tax) continue;
+
+                if (propertiesString == string.Empty)
+                    propertiesString += userProperty.property.name;
+                else
+                    propertiesString += ", " + userProperty.property.name;
+
+                DateTime lastCollect = userProperty.lastCollect;
+
+                if (lastCollect.AddHours(12) <= DateTime.Now)
+                {
+                    UserItem[] items = userProperty.property.items;
+                    string itemString = string.Empty;
+
+                    for (int i = 0; i < items.Length; i++)
+                    {
+                        if (i != 0) itemString += ", ";
+                        itemString += $"{items[i].quantity} de {items[i].item.name}";
+
+                        ItemHandler.AddItemToUser(user, items[i]);
+                    }
+
+                    if (itemsString == string.Empty)
+                        itemsString += itemString;
+                    else
+                        itemsString += ", " + itemString;
+
+                    Terminal.WriteLine($"Added | {itemString} | of {userProperty.property.id} to {Context.User} ({Context.User.Id})", Terminal.MessageType.INFO);
+                    user.money -= userProperty.property.tax;
+                    userProperty.lastCollect = DateTime.Now;
+
+                    totalTax += userProperty.property.tax;
+                }
+            }
+
+            if(totalTax == 0)
+            {
+                await Context.Channel.SendMessageAsync($"Você não tem propriedades para coletar!");
+                return;
+            }
+
+            await Context.Channel.SendMessageAsync($"Você ganhou `{itemsString}` coletando sua `{propertiesString}`. Gastando {totalTax} de dinheiro em taxas de coleta!");
         }
 
         [Command("Buy"), Alias("Comprar")]
@@ -82,7 +150,7 @@ namespace BancoBahiaBot.Modules
 
             user.money -= chosenProperty.price;
 
-            UserProperty newProperty = new UserProperty
+            UserProperty newProperty = new
                 (
                     chosenProperty,
                     DateTime.Now.AddDays(-1)
@@ -92,6 +160,31 @@ namespace BancoBahiaBot.Modules
 
             await Context.Channel.SendMessageAsync($"{chosenProperty.name} comprada com sucesso!");
             Terminal.WriteLine($"{Context.User} ({Context.User.Id}) bought {chosenProperty.id} succesfully!", Terminal.MessageType.INFO);
+        }
+
+        [Command("SellProperty"), Alias("VenderPropriedade")]
+        public async Task SellPropertyCommand([Remainder] string property)
+        {
+            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, user.id);
+            if (PropertyHandler.GetProperty(property) == null)
+            {
+                await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
+                return;
+            }
+            if (userProperty == null)
+            {
+                await Context.Channel.SendMessageAsync("Você não possui essa propriedade!");
+                return;
+            }
+
+            var msg = await Context.Channel.SendMessageAsync($"Adicione a reação :white_check_mark: para vender sua {userProperty.property.name} por {userProperty.property.price / 3} de dinheiro! Você vai ganhar somente um terço do preço total.");
+
+            ReactionHandler.AddReactionRequest(async (user, param) =>
+            {
+                await Context.Channel.SendMessageAsync($"debug reac {param}, por: " + user.Mention);
+
+            }, new("✅"), msg, userProperty.property.id, true);
         }
 
         [Command("Properties"), Alias("Propriedades")]
@@ -226,6 +319,18 @@ namespace BancoBahiaBot.Modules
                 $"`{chosenProperty.description}`");
 
             await Context.Channel.SendMessageAsync(embed: embed.Build());
+        }
+
+        struct SellPropertyRequest
+        {
+            public SellPropertyRequest(IUser user, UserProperty property)
+            {
+                this.user = user;
+                this.property = property;
+            }
+
+            public IUser user;
+            public UserProperty property;
         }
     }
 }

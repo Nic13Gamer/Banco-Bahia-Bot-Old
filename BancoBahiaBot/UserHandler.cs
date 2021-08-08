@@ -1,24 +1,23 @@
 ﻿using Discord.WebSocket;
 using SimpleJSON;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System;
 
 namespace BancoBahiaBot
 {
     class UserHandler
     {
-        public static DiscordSocketClient client;
+        static readonly string botDataPath = Bot.DATA_PATH + "/botData.json";
 
-        static readonly List<User> users = new List<User>();
+        static readonly List<User> users = new();
 
         public static void LoadUsersData()
         {
-            string path = "C:/Users/nicho/Desktop/BancoBahia/botData.json";
-            if (!File.Exists(path)) File.Create(path);
-            string rawJson = File.ReadAllText(path); if (rawJson.Trim() == string.Empty) { SaveUsersData(); rawJson = File.ReadAllText(path); }
+            if (!File.Exists(botDataPath)) File.Create(botDataPath);
+            string rawJson = File.ReadAllText(botDataPath); if (rawJson.Trim() == string.Empty) { SaveUsersData(); rawJson = File.ReadAllText(botDataPath); }
             JSONObject json = (JSONObject)JSON.Parse(rawJson);
-            
+
             foreach (JSONObject user in json["users"])
                 LoadUserFromJson(user);
         }
@@ -34,14 +33,13 @@ namespace BancoBahiaBot
 
                 #region Load Properties
 
-                List<UserProperty> properties = new List<UserProperty>();
+                List<UserProperty> properties = new();
 
                 foreach (JSONObject userPropertyJson in user["properties"])
                 {
                     Property property = PropertyHandler.GetProperty(userPropertyJson["id"]);
 
-                    UserProperty userProperty = new UserProperty
-                        (
+                    UserProperty userProperty = new(
                             property,
                             DateTime.Parse(userPropertyJson["lastCollect"])
                         );
@@ -55,13 +53,13 @@ namespace BancoBahiaBot
 
                 #region Load Inventory
 
-                List<UserItem> inventory = new List<UserItem>();
+                List<UserItem> inventory = new();
 
                 foreach (JSONObject userItemJson in user["inventory"])
                 {
                     Item item = ItemHandler.GetItem(userItemJson["id"]);
 
-                    UserItem userItem = new UserItem
+                    UserItem userItem = new
                         (
                             item,
                             quantity: int.Parse(userItemJson["quantity"])
@@ -76,22 +74,20 @@ namespace BancoBahiaBot
             }
             catch (Exception e)
             {
-                Terminal.WriteLine($"Error while loading user data: {e.Message}", Terminal.MessageType.ERROR);
+                Terminal.WriteLine($"Error while loading user data: {e.Message} | User: {(string)user["id"]}", Terminal.MessageType.ERROR);
                 return;
             }
-            
+
         }
 
         public static void SaveUsersData()
         {
-            string path = "C:/Users/nicho/Desktop/BancoBahia/botData.json";
-
-            JSONObject json = new JSONObject();
-            JSONObject usersJson = new JSONObject();
+            JSONObject json = new();
+            JSONObject usersJson = new();
 
             foreach (User user in users)
             {
-                JSONObject userArray = new JSONObject();
+                JSONObject userArray = new();
 
                 userArray.Add("id", user.id);
                 userArray.Add("money", user.money);
@@ -99,11 +95,11 @@ namespace BancoBahiaBot
 
                 #region Save Properties
 
-                JSONObject userProperties = new JSONObject();
+                JSONObject userProperties = new();
 
                 foreach (UserProperty property in user.properties)
                 {
-                    JSONObject userProperty = new JSONObject();
+                    JSONObject userProperty = new();
 
                     userProperty.Add("id", property.property.id);
                     userProperty.Add("lastCollect", property.lastCollect.ToString());
@@ -117,11 +113,11 @@ namespace BancoBahiaBot
 
                 #region Save Inventory
 
-                JSONObject userInventory = new JSONObject();
+                JSONObject userInventory = new();
 
                 foreach (UserItem item in user.inventory)
                 {
-                    JSONObject userItem = new JSONObject();
+                    JSONObject userItem = new();
 
                     userItem.Add("id", item.item.id);
                     userItem.Add("quantity", item.quantity);
@@ -140,7 +136,7 @@ namespace BancoBahiaBot
 
             try
             {
-                File.WriteAllText(path, json.ToString());
+                File.WriteAllText(botDataPath, json.ToString());
             }
             catch (Exception e)
             {
@@ -148,24 +144,20 @@ namespace BancoBahiaBot
             }
         }
 
-        public static User GetUser(string id)
-        {
-            User user = CreateUser(id);
-            return user;
-        }
+        public static User GetUser(string id) => CreateUser(id);
 
         public static User CreateUser(string id)
         {
             foreach (User _user in users)
                 if (_user.id == id) return _user;
 
-            User user = new User
+            User user = new
                 (
                     id: id,
                     money: 0,
                     lastDaily: DateTime.Now.AddDays(-1),
-                    properties: new UserProperty[] { },
-                    inventory: new UserItem[] { }
+                    properties: Array.Empty<UserProperty>(),
+                    inventory: Array.Empty<UserItem>()
                 );
 
             users.Add(user);

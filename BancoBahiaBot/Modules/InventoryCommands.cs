@@ -1,13 +1,12 @@
 ﻿using Discord;
 using Discord.Commands;
-using System;
 using System.Threading.Tasks;
 
 namespace BancoBahiaBot.Modules
 {
     public class InventoryCommands : ModuleBase<SocketCommandContext>
     {
-        [Command("Inventory"), Alias("Itens")]
+        [Command("Inventory"), Alias("Inventario")]
         public async Task InventoryCommand()
         {
             User user = UserHandler.GetUser(Context.User.Id.ToString());

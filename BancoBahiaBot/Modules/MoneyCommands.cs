@@ -7,7 +7,7 @@ namespace BancoBahiaBot.Modules
 {
     public class MoneyCommands : ModuleBase<SocketCommandContext>
     {
-        readonly Random random = new Random();
+        readonly Random random = new();
 
         [Command("Atm"), Alias("Money")]
         public async Task AtmCommand()
@@ -135,5 +135,20 @@ namespace BancoBahiaBot.Modules
 
             await Context.Channel.SendMessageAsync(reply);
         }
+
+        /*struct TransferRequest
+        {
+            public TransferRequest()
+            {
+
+            }
+
+            public IUser from;
+            public IUser to;
+            public int money;
+
+            public bool fromAccepted;
+            public bool toAccepted;
+        }*/
     }
 }

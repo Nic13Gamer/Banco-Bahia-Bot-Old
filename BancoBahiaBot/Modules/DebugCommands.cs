@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using System;
 using System.Threading.Tasks;
 
@@ -6,13 +7,13 @@ namespace BancoBahiaBot.Modules
 {
     public class DebugCommands : ModuleBase<SocketCommandContext>
     {
-        readonly Random random = new Random();
+        readonly Random random = new();
 
         [Command("Pergunta"), Alias("Question")]
         public async Task QuestionCommand([Remainder]string args)
         {
             bool chance = Convert.ToBoolean(random.Next(0, 2));
-            string reply = $"{args} : {chance}\n\nPergunta feita por: {Context.User.Mention}!";
+            string reply = $"{args} : {chance}\n\nPergunta feita por: {Context.User} ({Context.User.Id})!";
 
             await Context.Channel.SendMessageAsync(reply);
             Terminal.WriteLine($"Replying to {Context.User} ({Context.User.Id}):\n{reply}", Terminal.MessageType.INFO, ConsoleColor.Gray);
@@ -21,9 +22,7 @@ namespace BancoBahiaBot.Modules
         [Command("SaveLog")]
         public Task SaveLogCommand()
         {
-            string path = "C:/Users/nicho/Desktop/BancoBahia/log.txt";
-
-            Terminal.OutputLog(path);
+            Terminal.SaveLog();
 
             return null;
         }
@@ -54,7 +53,7 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            UserItem userItem = new UserItem
+            UserItem userItem = new
                 (
                     item: item,
                     quantity: quantityInt
@@ -94,6 +93,33 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync(reply);
 
             Terminal.WriteLine($"Added {money} of money to {Context.User} ({Context.User.Id})", Terminal.MessageType.INFO);
+        }
+
+        // DEBUG (JUST FOR NIC :) )
+        [Command("ResetPropertiesTime")]
+        public async Task AddMoneyCommand()
+        {
+            if (Context.User.Id != 345680337277288448) return;
+
+            UserProperty[] userProperties = UserHandler.GetUser(Context.User.Id.ToString()).properties;
+
+            foreach (UserProperty userProperty in userProperties)
+                userProperty.lastCollect = userProperty.lastCollect.AddDays(-1);
+
+            await Context.Channel.SendMessageAsync("Tempo de coleta de propriedades resatados para o ADM :place_of_worship::place_of_worship::place_of_worship:!");
+        }
+
+        [Command("reac")]
+        public Task ReacCommand()
+        {
+            ReactionHandler.AddReactionRequest(Callback, new("✅"), Context.Message, "dababy", true);
+
+            return null;
+        }
+
+        async void Callback(IUser user, object param)
+        {
+            await Context.Channel.SendMessageAsync($"debug reac {param}, por: " + user.Mention);
         }
     }
 }

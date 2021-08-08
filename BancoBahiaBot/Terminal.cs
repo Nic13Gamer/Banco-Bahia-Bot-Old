@@ -6,7 +6,7 @@ namespace BancoBahiaBot
 {
     class Terminal
     {
-        static readonly List<string> consoleLog = new List<string>();
+        static readonly List<string> consoleLog = new();
 
         public static void WriteLine(string msg, MessageType type = MessageType.INFO, ConsoleColor color = ConsoleColor.White)
         {
@@ -36,7 +36,7 @@ namespace BancoBahiaBot
             consoleLog.Add($"[{type}] {msg}\n");
         }
 
-        public static void OutputLog(string path)
+        public static void SaveLog()
         {
             string log = string.Empty;
 
@@ -45,8 +45,8 @@ namespace BancoBahiaBot
 
             try
             {
-                File.WriteAllText(path, log);
-                WriteLine($"Saved log to {path}!", Terminal.MessageType.INFO);
+                File.WriteAllText(Bot.DATA_PATH + "/log.txt", log);
+                WriteLine($"Saved log to {Bot.DATA_PATH + "/log.txt"}!", Terminal.MessageType.INFO);
             }
             catch (Exception e)
             {

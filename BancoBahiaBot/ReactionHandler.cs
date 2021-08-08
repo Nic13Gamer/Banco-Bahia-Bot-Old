@@ -1,5 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BancoBahiaBot
@@ -7,12 +9,57 @@ namespace BancoBahiaBot
     class ReactionHandler
     {
         public static DiscordSocketClient client;
-
         public static void Start() => client.ReactionAdded += ReactionAdded;
 
-        static async Task ReactionAdded(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+        static readonly List<ReactionRequest> pendingReactionRequests = new();
+
+        static Task ReactionAdded(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            
+            if (reaction.User.Value.IsBot) return null;
+
+            foreach (ReactionRequest pendingReaction in pendingReactionRequests)
+            {
+                if (reaction.Emote.Name != pendingReaction.reaction.Name || reaction.MessageId != pendingReaction.message.Id) continue;
+
+                pendingReaction.callback?.Invoke(reaction.User.Value, pendingReaction.param);
+
+                pendingReactionRequests.Remove(pendingReaction);
+                break;
+            }
+
+            return null;
+        }
+
+        public async static void AddReactionRequest(Action<IUser, object> callback, Emoji reaction, IMessage message, object param, bool addReaction = false)
+        {
+            ReactionRequest newPendingReaction = new
+                (
+                    callback: callback,
+                    reaction: reaction,
+                    message: message,
+                    param: param
+                );
+
+            pendingReactionRequests.Add(newPendingReaction);
+
+            if(addReaction)
+            await message.AddReactionAsync(reaction);
+        }
+
+        struct ReactionRequest
+        {
+            public ReactionRequest(Action<IUser, object> callback, Emoji reaction, IMessage message, object param)
+            {
+                this.callback = callback;
+                this.reaction = reaction;
+                this.message = message;
+                this.param = param;
+            }
+
+            public Action<IUser, object> callback;
+            public Emoji reaction;
+            public IMessage message;
+            public object param;
         }
     }
 }
