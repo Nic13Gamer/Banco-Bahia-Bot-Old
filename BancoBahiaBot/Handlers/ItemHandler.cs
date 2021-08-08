@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using BancoBahiaBot.Utils;
+
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BancoBahiaBot
@@ -44,11 +46,11 @@ namespace BancoBahiaBot
 
         public static Item GetItem(string item)
         {
-            item = RemoveAccents(item.ToLower());
+            item = StringUtils.RemoveAccents(item.ToLower());
 
             foreach (Item _item in items)
             {
-                if (RemoveAccents(_item.id.ToLower()) == item || RemoveAccents(_item.name.ToLower()) == item)
+                if (StringUtils.RemoveAccents(_item.id.ToLower()) == item || StringUtils.RemoveAccents(_item.name.ToLower()) == item)
                 {
                     return _item;
                 }
@@ -110,23 +112,6 @@ namespace BancoBahiaBot
             }
 
             user.inventory = userInventory.ToArray();
-        }
-
-        static string RemoveAccents(string text)
-        {
-            var normalizedString = text.Normalize(System.Text.NormalizationForm.FormD);
-            var stringBuilder = new System.Text.StringBuilder();
-
-            foreach (var c in normalizedString)
-            {
-                var unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c);
-                if (unicodeCategory != System.Globalization.UnicodeCategory.NonSpacingMark)
-                {
-                    stringBuilder.Append(c);
-                }
-            }
-
-            return stringBuilder.ToString().Normalize(System.Text.NormalizationForm.FormC);
         }
     }
 

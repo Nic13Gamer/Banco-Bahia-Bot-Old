@@ -17,10 +17,10 @@ namespace BancoBahiaBot
 
             service.AddModulesAsync(Assembly.GetEntryAssembly(), null);
 
-            client.MessageReceived += HandleCommandAsync;
+            client.MessageReceived += HandleCommand;
         }
 
-        async Task HandleCommandAsync(SocketMessage s)
+        async Task HandleCommand(SocketMessage s)
         {
             var msg = s as SocketUserMessage;
             if (msg == null) return;
@@ -30,7 +30,7 @@ namespace BancoBahiaBot
             int argPos = 0;
             if (msg.HasStringPrefix("?", ref argPos))
             {
-                if (context.User.IsBot) return;
+                if (context.User.IsBot || context.IsPrivate) return;
 
                 UserHandler.CreateUser(context.User.Id.ToString());
                 var result = await service.ExecuteAsync(context, argPos, null);
@@ -43,7 +43,7 @@ namespace BancoBahiaBot
                     if (result.Error == CommandError.BadArgCount)
                         reply = context.Message + " tem poucos ou muitos argumentos!";
 
-                    Terminal.WriteLine($"Bot use error {result.Error} by {context.User} ({context.User.Id})", Terminal.MessageType.WARN);
+                    Terminal.WriteLine($"Bot use error [{result.ErrorReason}] by {context.User} ({context.User.Id})", Terminal.MessageType.WARN);
 
                     await context.Channel.SendMessageAsync(reply);
                 }

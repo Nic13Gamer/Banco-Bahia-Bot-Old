@@ -30,10 +30,12 @@ namespace BancoBahiaBot
 
             UserHandler.LoadUsersData();
 
+            StockHandler.Start();
+
             ReactionHandler.client = client;
             ReactionHandler.Start();
 
-            Terminal.WriteLine("Bot started successfully!", Terminal.MessageType.INFO);
+            Terminal.WriteLine($"Bot started successfully!", Terminal.MessageType.INFO);
 
             await client.SetGameAsync("Sou um banco que tem seu próprio dinheiro virtual e muito mais!");
 

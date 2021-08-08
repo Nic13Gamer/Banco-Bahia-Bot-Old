@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BancoBahiaBot.Utils;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -89,11 +91,11 @@ namespace BancoBahiaBot
 
         public static Property GetProperty(string property)
         {
-            property = RemoveAccents(property.ToLower());
+            property = StringUtils.RemoveAccents(property.ToLower());
 
             foreach (Property _property in properties)
             {
-                if (RemoveAccents(_property.id.ToLower()) == property|| RemoveAccents(_property.name.ToLower()) == property)
+                if (StringUtils.RemoveAccents(_property.id.ToLower()) == property|| StringUtils.RemoveAccents(_property.name.ToLower()) == property)
                 {
                     return _property;
                 }
@@ -130,23 +132,6 @@ namespace BancoBahiaBot
             userProperties.Add(property);
 
             user.properties = userProperties.ToArray();
-        }
-
-        static string RemoveAccents(string text)
-        {
-            var normalizedString = text.Normalize(System.Text.NormalizationForm.FormD);
-            var stringBuilder = new System.Text.StringBuilder();
-
-            foreach (var c in normalizedString)
-            {
-                var unicodeCategory = System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c);
-                if (unicodeCategory != System.Globalization.UnicodeCategory.NonSpacingMark)
-                {
-                    stringBuilder.Append(c);
-                }
-            }
-
-            return stringBuilder.ToString().Normalize(System.Text.NormalizationForm.FormC);
         }
     }
 
