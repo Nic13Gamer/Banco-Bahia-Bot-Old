@@ -1,5 +1,4 @@
-﻿using Discord.WebSocket;
-using SimpleJSON;
+﻿using SimpleJSON;
 using System;
 using System.Collections.Generic;
 using System.IO;
