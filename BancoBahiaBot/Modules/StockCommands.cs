@@ -1,4 +1,5 @@
 ﻿using BancoBahiaBot.Utils;
+
 using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
@@ -76,7 +77,7 @@ namespace BancoBahiaBot.Modules
             {
                 Title = $"**TICKERS DISPONÍVEIS**",
                 Color = Color.Orange
-            }.WithCurrentTimestamp().WithFooter(footer => { footer.Text = "Para ver mais sobre um ticker, use ?broker info <ticker>"; });
+            }.WithCurrentTimestamp().WithFooter(footer => { footer.Text = "Para ver mais sobre um ticker, use ?broker info <nome>"; });
 
 
             foreach (Stock stock in StockHandler.stocks)

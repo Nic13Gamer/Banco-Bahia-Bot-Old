@@ -27,10 +27,9 @@ namespace BancoBahiaBot
 
             ItemHandler.Start();
             PropertyHandler.Start();
-
-            UserHandler.LoadUsersData();
-
             StockHandler.Start();
+
+            SaveManager.Load();
 
             ReactionHandler.client = client;
             ReactionHandler.Start();

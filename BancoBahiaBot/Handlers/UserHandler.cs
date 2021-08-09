@@ -1,83 +1,11 @@
-﻿using SimpleJSON;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace BancoBahiaBot
 {
     class UserHandler
     {
-        static readonly string botDataPath = Bot.DATA_PATH + "/botData.json";
-
         static readonly List<User> users = new();
-
-        public static void LoadUsersData()
-        {
-            if (!File.Exists(botDataPath)) File.Create(botDataPath);
-            string rawJson = File.ReadAllText(botDataPath); if (rawJson.Trim() == string.Empty) { SaveManager.SaveAll(); rawJson = File.ReadAllText(botDataPath); }
-            JSONObject json = (JSONObject)JSON.Parse(rawJson);
-
-            foreach (JSONObject user in json["users"])
-                LoadUserFromJson(user);
-        }
-
-        static void LoadUserFromJson(JSONObject user)
-        {
-            try
-            {
-                User newUser = CreateUser(user["id"]);
-
-                newUser.money = user["money"];
-                newUser.lastDaily = DateTime.Parse(user["lastDaily"]);
-
-                #region Load Properties
-
-                List<UserProperty> properties = new();
-
-                foreach (JSONObject userPropertyJson in user["properties"])
-                {
-                    Property property = PropertyHandler.GetProperty(userPropertyJson["id"]);
-
-                    UserProperty userProperty = new(
-                            property,
-                            DateTime.Parse(userPropertyJson["lastCollect"])
-                        );
-
-                    properties.Add(userProperty);
-                }
-
-                newUser.properties = properties.ToArray();
-
-                #endregion
-
-                #region Load Inventory
-
-                List<UserItem> inventory = new();
-
-                foreach (JSONObject userItemJson in user["inventory"])
-                {
-                    Item item = ItemHandler.GetItem(userItemJson["id"]);
-
-                    UserItem userItem = new
-                        (
-                            item,
-                            quantity: int.Parse(userItemJson["quantity"])
-                        );
-
-                    inventory.Add(userItem);
-                }
-
-                newUser.inventory = inventory.ToArray();
-
-                #endregion
-            }
-            catch (Exception e)
-            {
-                Terminal.WriteLine($"Error while loading user data: {e.Message} | User: {(string)user["id"]}", Terminal.MessageType.ERROR);
-                return;
-            }
-
-        }
 
         public static User GetUser(string id) => CreateUser(id);
 

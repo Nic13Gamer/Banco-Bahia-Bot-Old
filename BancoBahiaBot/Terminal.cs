@@ -8,9 +8,9 @@ namespace BancoBahiaBot
     {
         static readonly List<string> consoleLog = new();
 
-        public static void WriteLine(string msg, MessageType type = MessageType.INFO, ConsoleColor color = ConsoleColor.White)
+        public static void WriteLine(object msg, MessageType type = MessageType.INFO, ConsoleColor color = ConsoleColor.White)
         {
-            AddToLog(msg, type);
+            AddToLog(msg.ToString(), type);
 
             if (type == MessageType.INFO)
             {
