@@ -63,6 +63,21 @@ namespace BancoBahiaBot
 
                 #region Save stocks
 
+                JSONObject userStocks = new();
+
+                foreach (UserStock stock in user.stocks)
+                {
+                    JSONObject userStock = new();
+
+                    userStock.Add("id", stock.stock.id);
+                    userStock.Add("quantity", stock.quantity);
+                    userStock.Add("highBuyPrice", stock.highBuyPrice);
+
+                    userStocks.Add(stock.stock.id, userStock);
+                }
+
+                userJson.Add("stocks", userStocks);
+
                 #endregion
 
                 usersJson.Add(user.id, userJson);
@@ -176,6 +191,24 @@ namespace BancoBahiaBot
                 #endregion
 
                 #region Load stocks
+
+                List<UserStock> stocks = new();
+
+                foreach (JSONObject userStockJson in userJson["stocks"])
+                {
+                    Stock stock = StockHandler.GetStock(userStockJson["id"]);
+
+                    UserStock userStock = new
+                        (
+                            stock,
+                            quantity: userStockJson["quantity"]
+                        );
+                    userStock.highBuyPrice = userStockJson["highBuyPrice"];
+
+                    stocks.Add(userStock);
+                }
+
+                newUser.stocks = stocks.ToArray();
 
                 #endregion
             }

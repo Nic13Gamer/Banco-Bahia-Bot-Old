@@ -104,9 +104,8 @@ namespace BancoBahiaBot
             return null;
         }
 
-        public static UserProperty GetUserProperty(string property, string id)
+        public static UserProperty GetUserProperty(string property, User user)
         {
-            User user = UserHandler.GetUser(id);
             Property chosenProperty = GetProperty(property);
 
             if (chosenProperty == null)
@@ -125,7 +124,7 @@ namespace BancoBahiaBot
             return userProperty;
         }
 
-        public static void AddUserProperty(User user, UserProperty property)
+        public static void AddPropertyToUser(User user, UserProperty property)
         {
             List<UserProperty> userProperties = user.properties.ToList();
 

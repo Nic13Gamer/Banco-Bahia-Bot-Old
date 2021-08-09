@@ -53,13 +53,7 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            UserItem userItem = new
-                (
-                    item: item,
-                    quantity: quantityInt
-                );
-
-            ItemHandler.AddItemToUser(user, userItem);
+            ItemHandler.AddItemToUser(user, item, quantityInt);
 
             string reply = $"Adicionado {quantityInt} de {item.name} para o ADM :place_of_worship::place_of_worship::place_of_worship:!";
 

@@ -74,22 +74,24 @@ namespace BancoBahiaBot
             return userItem;
         }
 
-        public static void AddItemToUser(User user, UserItem item)
+        public static void AddItemToUser(User user, Item item, int quantity = 1)
         {
             List<UserItem> userInventory = user.inventory.ToList();
 
             foreach (UserItem userItem in userInventory)
             {
-                if(userItem.item == item.item)
+                if(userItem.item == item)
                 {
-                    userItem.quantity += item.quantity;
+                    userItem.quantity += quantity;
                     user.inventory = userInventory.ToArray();
 
                     return;
                 }
             }
 
-            userInventory.Add(item);
+            UserItem newUserItem = new(item, quantity);
+
+            userInventory.Add(newUserItem);
 
             user.inventory = userInventory.ToArray();
         }

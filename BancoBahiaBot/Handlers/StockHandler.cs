@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace BancoBahiaBot
@@ -87,7 +88,7 @@ namespace BancoBahiaBot
             {
                 foreach (Stock stock in stocks)
                 {
-                    int chance = 65 + random.Next(-5, 6);
+                    int chance = 65 + random.Next(-7, 5);
                     int randomChance = random.Next(0, 101);
 
                     int modifier = random.Next(6, 13);
@@ -145,6 +146,73 @@ namespace BancoBahiaBot
 
             return null;
         }
+
+        public static UserStock GetUserStock(string stock, User user)
+        {
+            Stock chosenStock = GetStock(stock);
+
+            if (chosenStock == null)
+                return null;
+
+            UserStock userStock = null;
+            foreach (UserStock _userStock in user.stocks)
+            {
+                if (_userStock.stock.id == chosenStock.id)
+                {
+                    userStock = _userStock;
+                    break;
+                }
+            }
+
+            return userStock;
+        }
+
+        public static void AddStockToUser(User user, Stock stock, int quantity = 1)
+        {
+            List<UserStock> userStocks = user.stocks.ToList();
+
+            foreach (UserStock userStock in userStocks)
+            {
+                if (userStock.stock.id == stock.id)
+                {
+                    if (stock.price > userStock.highBuyPrice || userStock.highBuyPrice == -1)
+                        userStock.highBuyPrice = stock.price;
+
+                    userStock.quantity += quantity;
+                    user.stocks = userStocks.ToArray();
+
+                    return;
+                }
+            }
+
+            UserStock newUserStock = new(stock, quantity);
+            if(newUserStock.highBuyPrice == -1)
+                newUserStock.highBuyPrice = stock.price;
+
+            userStocks.Add(newUserStock);
+
+            user.stocks = userStocks.ToArray();
+        }
+
+        public static void RemoveStockFromUser(User user, Stock stock, int quantity = 1)
+        {
+            List<UserStock> userStocks = user.stocks.ToList();
+
+            foreach (UserStock userStock in user.stocks)
+            {
+                if (userStock.stock.id == stock.id)
+                {
+                    userStock.quantity -= quantity;
+
+                    if (userStock.quantity <= 0)
+                    {
+                        userStocks.Remove(userStock);
+                    }
+                }
+            }
+
+            user.stocks = userStocks.ToArray();
+        }
     }
 
     class Stock
@@ -177,5 +245,6 @@ namespace BancoBahiaBot
 
         public Stock stock;
         public int quantity;
+        public int highBuyPrice = -1;
     }
 }

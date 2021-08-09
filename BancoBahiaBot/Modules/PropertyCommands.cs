@@ -11,7 +11,7 @@ namespace BancoBahiaBot.Modules
         public async Task CollectCommand([Remainder]string property)
         {
             User user = UserHandler.GetUser(Context.User.Id.ToString());
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, Context.User.Id.ToString());
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id.ToString()));
             if(PropertyHandler.GetProperty(property) == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
@@ -42,7 +42,7 @@ namespace BancoBahiaBot.Modules
                     if (i != 0) itemString += ", ";
                     itemString += $"{items[i].quantity} de {items[i].item.name}";
 
-                    ItemHandler.AddItemToUser(user, items[i]);
+                    ItemHandler.AddItemToUser(user, items[i].item, items[i].quantity);
                 }
 
                 reply = $"Você ganhou `{itemString}` coletando essa {userProperty.property.name}! Gastando {userProperty.property.tax} de dinheiro em taxas de coleta.";
@@ -98,7 +98,7 @@ namespace BancoBahiaBot.Modules
                         if (i != 0) itemString += ", ";
                         itemString += $"{items[i].quantity} de {items[i].item.name}";
 
-                        ItemHandler.AddItemToUser(user, items[i]);
+                        ItemHandler.AddItemToUser(user, items[i].item, items[i].quantity);
                     }
 
                     if (itemsString == string.Empty)
@@ -128,7 +128,7 @@ namespace BancoBahiaBot.Modules
         {
             User user = UserHandler.GetUser(Context.User.Id.ToString());
 
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, Context.User.Id.ToString());
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id.ToString()));
             if (PropertyHandler.GetProperty(property) == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
@@ -156,7 +156,7 @@ namespace BancoBahiaBot.Modules
                     DateTime.Now.AddDays(-1)
                 );
 
-            PropertyHandler.AddUserProperty(user, newProperty);
+            PropertyHandler.AddPropertyToUser(user, newProperty);
 
             await Context.Channel.SendMessageAsync($"{chosenProperty.name} comprada com sucesso!");
             Terminal.WriteLine($"{Context.User} ({Context.User.Id}) bought {chosenProperty.id} succesfully!", Terminal.MessageType.INFO);
@@ -166,7 +166,7 @@ namespace BancoBahiaBot.Modules
         public async Task SellPropertyCommand([Remainder] string property)
         {
             User user = UserHandler.GetUser(Context.User.Id.ToString());
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, user.id);
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id.ToString()));
             if (PropertyHandler.GetProperty(property) == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
@@ -286,7 +286,7 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, Context.User.Id.ToString());
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id.ToString()));
             string ownedEmoji = userProperty == null ? ":x:" : ":white_check_mark:";
 
             EmbedBuilder embed = new EmbedBuilder
