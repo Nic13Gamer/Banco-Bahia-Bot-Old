@@ -286,12 +286,8 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            string ownedEmoji;
             UserProperty userProperty = PropertyHandler.GetUserProperty(property, Context.User.Id.ToString());
-            if (userProperty == null)
-                ownedEmoji = ":x:";
-            else
-                ownedEmoji = ":white_check_mark:";
+            string ownedEmoji = userProperty == null ? ":x:" : ":white_check_mark:";
 
             EmbedBuilder embed = new EmbedBuilder
             {
