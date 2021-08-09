@@ -18,10 +18,50 @@ namespace BancoBahiaBot
 
         public static Stock ursinhusLTDA = new
             (
-                id: "ursinhus_ltda",
+                id: "ursinhusLtda",
                 name: "Ursinhus LTDA",
                 shortName: "URNL",
                 price: 250
+            );
+
+        public static Stock menezesCompany = new
+            (
+                id: "menezesCompany",
+                name: "Menezes Company",
+                shortName: "MZCY",
+                price: 340
+            );
+
+        public static Stock menezesCompany1 = new
+            (
+                id: "menezesCompany1",
+                name: "Menezes Company",
+                shortName: "MZCY",
+                price: 340
+            );
+
+        public static Stock menezesCompany2 = new
+            (
+                id: "menezesCompany2",
+                name: "Menezes Company",
+                shortName: "MZCY",
+                price: 340
+            );
+
+        public static Stock menezesCompany3 = new
+            (
+                id: "menezesCompany3",
+                name: "Menezes Company",
+                shortName: "MZCY",
+                price: 340
+            );
+
+        public static Stock menezesCompany4 = new
+            (
+                id: "menezesCompany4",
+                name: "Menezes Company",
+                shortName: "MZCY",
+                price: 340
             );
 
         #endregion
@@ -29,6 +69,11 @@ namespace BancoBahiaBot
         public static void Start()
         {
             stocks.Add(ursinhusLTDA);
+            stocks.Add(menezesCompany);
+            stocks.Add(menezesCompany1);
+            stocks.Add(menezesCompany2);
+            stocks.Add(menezesCompany3);
+            stocks.Add(menezesCompany4);
 
             stocksUpdaterThread = new(StocksUpdater);
             stocksUpdaterThread.Start();
@@ -42,42 +87,46 @@ namespace BancoBahiaBot
             {
                 foreach (Stock stock in stocks)
                 {
-                    int chance = 60;
+                    int chance = 65 + random.Next(-5, 6);
                     int randomChance = random.Next(0, 101);
+
+                    int modifier = random.Next(6, 13);
 
                     int newPrice = stock.price;
 
                     if (stock.wentUp)
                     {
                         if (randomChance <= chance)
-                            newPrice += 5;
+                            newPrice += modifier;
                         else
                         {
-                            newPrice -= 5;
+                            newPrice -= modifier;
                             stock.wentUp = false;
                         }
                     }
                     else
                     {
                         if (randomChance <= chance)
-                            newPrice -= 5;
+                            newPrice -= modifier;
                         else
                         {
-                            newPrice += 5;
+                            newPrice += modifier;
                             stock.wentUp = true;
                         }
                     }
 
-                    newPrice = Math.Clamp(newPrice, 150, 1000);
+                    newPrice = Math.Clamp(newPrice, 150, 10000);
                     stock.price = newPrice;
 
-                    if (stock.lastPrices.Count >= 24)
+                    if (stock.lastPrices.Count >= 48)
                         stock.lastPrices.RemoveAt(0);
 
                     stock.lastPrices.Add(stock.price);
                 }
 
-                Thread.Sleep(1); // UPDATE EACH HOUR
+                //SaveManager.SaveAll(); COMMENTED FOR PERFORMENCE REASONS
+
+                Thread.Sleep(50); // UPDATE EACH HOUR
             }
         }
 

@@ -13,7 +13,7 @@ namespace BancoBahiaBot.Modules
         public async Task QuestionCommand([Remainder]string args)
         {
             bool chance = Convert.ToBoolean(random.Next(0, 2));
-            string reply = $"{args} : {chance}\n\nPergunta feita por: {Context.User} ({Context.User.Id})!";
+            string reply = $"{args} : {chance}\n\nPergunta feita por: {Context.User.Mention}!";
 
             await Context.Channel.SendMessageAsync(reply);
             Terminal.WriteLine($"Replying to {Context.User} ({Context.User.Id}):\n{reply}", Terminal.MessageType.INFO, ConsoleColor.Gray);
@@ -97,7 +97,7 @@ namespace BancoBahiaBot.Modules
 
         // DEBUG (JUST FOR NIC :) )
         [Command("ResetPropertiesTime")]
-        public async Task AddMoneyCommand()
+        public async Task ResetPropertiesTimeCommand()
         {
             if (Context.User.Id != 345680337277288448) return;
 

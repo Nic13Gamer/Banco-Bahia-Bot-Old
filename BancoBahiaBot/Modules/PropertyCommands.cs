@@ -227,7 +227,7 @@ namespace BancoBahiaBot.Modules
             embed.AddField("> Propriedades existentes",
                 existingProperties);
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
         }
 
         [Command("Properties"), Alias("Propriedades")]
@@ -272,7 +272,7 @@ namespace BancoBahiaBot.Modules
             embed.AddField("> Propriedades existentes",
                 existingProperties);
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
         }
 
         [Command("Property"), Alias("Propriedade")]
@@ -318,7 +318,7 @@ namespace BancoBahiaBot.Modules
             embed.AddField("> Descrição",
                 $"`{chosenProperty.description}`");
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
         }
 
         struct SellPropertyRequest

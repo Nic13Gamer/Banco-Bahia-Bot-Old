@@ -163,6 +163,8 @@ namespace BancoBahiaBot
             users.Add(user);
             return user;
         }
+
+        public static User[] GetUsers() => users.ToArray();
     }
 
     class User

@@ -16,46 +16,53 @@ namespace BancoBahiaBot.Modules
             {
                 case "chart":
                     {
-                        string data = string.Empty;
                         string stockString = StringUtils.GetAllRemainderTextAfter(args, 0);
 
                         Stock stock = StockHandler.GetStock(stockString);
                         if(stock == null)
                         {
-                            await Context.Channel.SendMessageAsync("Essa ação não existe!");
+                            await Context.Channel.SendMessageAsync("Esse ticker não existe!");
                             return;
                         }
 
-                        foreach (int price in stock.lastPrices)
-                        {
-                            if (data == string.Empty)
-                                data += price;
-                            else
-                                data += "," + price;
-                        }
+                        string data = GetStockLastPricesString(stock);
 
                         EmbedBuilder embed = new EmbedBuilder
                         {
                             Title = $"**{stock.name}**",
                             Color = Color.Orange,
                             Url = $"http://localhost:5500/stocks/chart.html?stock={stock.shortName}&data={data}"
-                        }.WithCurrentTimestamp();
+                        }.WithCurrentTimestamp().WithFooter(footer => { footer.Text = $"Gráfico das últimas 48 horas de {stock.shortName}"; });
 
-                        await Context.Channel.SendMessageAsync(embed: embed.Build());
+                        await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
 
-                        return;
+                        break;
                     }
 
-                case "buystock" or "compraracao":
+                case "portifolio":
+                    {
+                        // show aquired stocks
+
+                        break;
+                    }
+
+                case "buy" or "comprar":
                     {
                         // buy stocks if possible
 
                         break;
                     }
 
-                case "sellstock" or "venderacao":
+                case "sell" or "vender":
                     {
                         // sell stocks if possible
+
+                        break;
+                    }
+
+                case "info":
+                    {
+                        // show information about a certain ticker
 
                         break;
                     }
@@ -65,7 +72,37 @@ namespace BancoBahiaBot.Modules
         [Command("Broker")]
         public async Task BrokerCommand()
         {
-            // show stock prices
+            EmbedBuilder embed = new EmbedBuilder
+            {
+                Title = $"**TICKERS DISPONÍVEIS**",
+                Color = Color.Orange
+            }.WithCurrentTimestamp().WithFooter(footer => { footer.Text = "Para ver mais sobre um ticker, use ?broker info <ticker>"; });
+
+
+            foreach (Stock stock in StockHandler.stocks)
+            {
+                string chartData = GetStockLastPricesString(stock);
+                string wentUpEmoji = stock.wentUp ? ":arrow_up:" : ":arrow_down:";
+
+                embed.AddField($"{stock.name} `({stock.shortName})` {wentUpEmoji}",
+                    $"Preço: **`${stock.price}`**\n[Gráfico de preços](http://localhost:5500/stocks/chart.html?stock={stock.shortName}&data={chartData})", true);
+            }
+
+            await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
+        }
+
+        static string GetStockLastPricesString(Stock stock)
+        {
+            string data = string.Empty;
+            foreach (int price in stock.lastPrices)
+            {
+                if (data == string.Empty)
+                    data += price;
+                else
+                    data += "," + price;
+            }
+
+            return data;
         }
     }
 }

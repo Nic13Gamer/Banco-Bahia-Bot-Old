@@ -31,7 +31,7 @@ namespace BancoBahiaBot.Modules
                 embed.AddField("> Itens possuídos",
                     "`Você ainda não possui nenhum item`");
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
         }
 
         [Command("Inventory"), Alias("Itens")]
@@ -59,7 +59,7 @@ namespace BancoBahiaBot.Modules
                 embed.AddField("> Itens possuídos",
                     $"`{mention.Username} ainda não possui nenhum item`");
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
         }
 
         [Command("SellItem"), Alias("VenderItem")]

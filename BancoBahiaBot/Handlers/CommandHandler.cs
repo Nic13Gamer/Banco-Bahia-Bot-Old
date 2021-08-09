@@ -34,7 +34,7 @@ namespace BancoBahiaBot
 
                 UserHandler.CreateUser(context.User.Id.ToString());
                 var result = await service.ExecuteAsync(context, argPos, null);
-                UserHandler.SaveUsersData();
+                SaveManager.SaveAll();
 
                 if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                 {
