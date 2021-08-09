@@ -79,6 +79,7 @@ namespace BancoBahiaBot
 
                 stockJson.Add("id", stock.id);
                 stockJson.Add("price", stock.price);
+                stockJson.Add("wentUp", stock.wentUp);
 
                 #region Save last prices
 

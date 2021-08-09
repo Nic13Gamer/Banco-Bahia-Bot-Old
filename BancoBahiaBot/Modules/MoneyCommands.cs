@@ -131,8 +131,6 @@ namespace BancoBahiaBot.Modules
                 reply = $"Seu daily ainda não está pronto! Tempo restante: {remaining}.";
             }
 
-            UserHandler.SaveUsersData();
-
             await Context.Channel.SendMessageAsync(reply);
         }
 

@@ -14,7 +14,7 @@ namespace BancoBahiaBot
         public static void LoadUsersData()
         {
             if (!File.Exists(botDataPath)) File.Create(botDataPath);
-            string rawJson = File.ReadAllText(botDataPath); if (rawJson.Trim() == string.Empty) { SaveUsersData(); rawJson = File.ReadAllText(botDataPath); }
+            string rawJson = File.ReadAllText(botDataPath); if (rawJson.Trim() == string.Empty) { SaveManager.SaveAll(); rawJson = File.ReadAllText(botDataPath); }
             JSONObject json = (JSONObject)JSON.Parse(rawJson);
 
             foreach (JSONObject user in json["users"])
@@ -77,70 +77,6 @@ namespace BancoBahiaBot
                 return;
             }
 
-        }
-
-        public static void SaveUsersData()
-        {
-            JSONObject json = new();
-            JSONObject usersJson = new();
-
-            foreach (User user in users)
-            {
-                JSONObject userArray = new();
-
-                userArray.Add("id", user.id);
-                userArray.Add("money", user.money);
-                userArray.Add("lastDaily", user.lastDaily.ToString());
-
-                #region Save Properties
-
-                JSONObject userProperties = new();
-
-                foreach (UserProperty property in user.properties)
-                {
-                    JSONObject userProperty = new();
-
-                    userProperty.Add("id", property.property.id);
-                    userProperty.Add("lastCollect", property.lastCollect.ToString());
-
-                    userProperties.Add(property.property.id, userProperty);
-                }
-
-                userArray.Add("properties", userProperties);
-
-                #endregion
-
-                #region Save Inventory
-
-                JSONObject userInventory = new();
-
-                foreach (UserItem item in user.inventory)
-                {
-                    JSONObject userItem = new();
-
-                    userItem.Add("id", item.item.id);
-                    userItem.Add("quantity", item.quantity);
-
-                    userInventory.Add(item.item.id, userItem);
-                }
-
-                userArray.Add("inventory", userInventory);
-
-                #endregion
-
-                usersJson.Add(user.id, userArray);
-            }
-
-            json.Add("users", usersJson);
-
-            try
-            {
-                File.WriteAllText(botDataPath, json.ToString());
-            }
-            catch (Exception e)
-            {
-                Terminal.WriteLine(e.Message, Terminal.MessageType.ERROR);
-            }
         }
 
         public static User GetUser(string id) => CreateUser(id);
