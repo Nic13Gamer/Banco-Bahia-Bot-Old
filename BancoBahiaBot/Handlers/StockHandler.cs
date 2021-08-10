@@ -22,7 +22,7 @@ namespace BancoBahiaBot
                 id: "ursinhusLtda",
                 name: "Ursinhus LTDA",
                 shortName: "URNL",
-                price: 250
+                price: 240
             );
 
         public static Stock menezesCompany = new
@@ -30,39 +30,47 @@ namespace BancoBahiaBot
                 id: "menezesCompany",
                 name: "Menezes Company",
                 shortName: "MZCY",
+                price: 480
+            );
+
+        public static Stock bancoBahiaInc = new
+            (
+                id: "bancoBahiaInc",
+                name: "Banco Bahia Inc",
+                shortName: "BCBI",
+                price: 430
+            );
+
+        public static Stock nikosCompany = new
+            (
+                id: "nikosCompany",
+                name: "Nikos Company",
+                shortName: "NKSC",
+                price: 280
+            );
+
+        public static Stock lyonStateInc = new
+            (
+                id: "lyonStateInc",
+                name: "Lyon State Inc",
+                shortName: "LYSI",
                 price: 340
             );
 
-        public static Stock menezesCompany1 = new
+        public static Stock lipezSportsCompany = new
             (
-                id: "menezesCompany1",
-                name: "Menezes Company",
-                shortName: "MZCY",
-                price: 340
+                id: "lipezSportsCompany",
+                name: "Lipez Sports Company",
+                shortName: "LZSC",
+                price: 390
             );
 
-        public static Stock menezesCompany2 = new
+        public static Stock joteiElectronicsInc = new
             (
-                id: "menezesCompany2",
-                name: "Menezes Company",
-                shortName: "MZCY",
-                price: 340
-            );
-
-        public static Stock menezesCompany3 = new
-            (
-                id: "menezesCompany3",
-                name: "Menezes Company",
-                shortName: "MZCY",
-                price: 340
-            );
-
-        public static Stock menezesCompany4 = new
-            (
-                id: "menezesCompany4",
-                name: "Menezes Company",
-                shortName: "MZCY",
-                price: 340
+                id: "joteiElectronicsInc",
+                name: "Jotei Electronics Inc",
+                shortName: "JTCI",
+                price: 410
             );
 
         #endregion
@@ -71,10 +79,11 @@ namespace BancoBahiaBot
         {
             stocks.Add(ursinhusLTDA);
             stocks.Add(menezesCompany);
-            stocks.Add(menezesCompany1);
-            stocks.Add(menezesCompany2);
-            stocks.Add(menezesCompany3);
-            stocks.Add(menezesCompany4);
+            stocks.Add(bancoBahiaInc);
+            stocks.Add(nikosCompany);
+            stocks.Add(lyonStateInc);
+            stocks.Add(lipezSportsCompany);
+            stocks.Add(joteiElectronicsInc);
 
             stocksUpdaterThread = new(StocksUpdater);
             stocksUpdaterThread.Start();
@@ -125,9 +134,9 @@ namespace BancoBahiaBot
                     stock.lastPrices.Add(stock.price);
                 }
 
-                //SaveManager.SaveAll(); COMMENTED FOR PERFORMENCE REASONS
+                SaveManager.SaveAll();
 
-                Thread.Sleep(50); // UPDATE EACH HOUR
+                Thread.Sleep(300000); // 5 minutes
             }
         }
 

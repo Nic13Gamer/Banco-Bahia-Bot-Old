@@ -35,15 +35,15 @@ namespace BancoBahiaBot.Modules
                         {
                             Title = $"**{stock.name}**",
                             Color = Color.Orange,
-                            Url = $"http://localhost:5500/stocks/chart.html?stock={stock.shortName}&data={data}"
-                        }.WithCurrentTimestamp().WithFooter(footer => { footer.Text = $"Gráfico das últimas 48 horas de {stock.shortName}"; });
+                            Url = $"{Bot.WEBSITE}/stocks/chart.html?stock={stock.shortName}&data={data}"
+                        }.WithCurrentTimestamp().WithFooter(footer => { footer.Text = $"Gráfico das últimas 4 horas de {stock.shortName}"; });
 
                         await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
 
                         break;
                     }
 
-                case "portifolio":
+                case "portifolio" or "portfolio":
                     {
                         EmbedBuilder embed = new EmbedBuilder
                         {
@@ -60,11 +60,14 @@ namespace BancoBahiaBot.Modules
                             string wentUpEmoji = stock.wentUp ? ":arrow_up:" : ":arrow_down:";
                             string stockSuccessEmoji = stock.price * userStock.quantity > userStock.highBuyPrice * userStock.quantity ? ":green_circle:" : ":red_circle:";
 
-                            embed.AddField($"{stock.name} `({stock.shortName})` {wentUpEmoji}",
-                                $"Total: **`${stock.price * userStock.quantity}`**" +
-                                $"\nMaior preço de compra: **`${userStock.highBuyPrice}`** | **`${userStock.highBuyPrice * userStock.quantity}`** {stockSuccessEmoji}" +
+                            string totalString = $"Total: **`${stock.price * userStock.quantity}`**" +
+                                $" | **`{(stock.price * userStock.quantity) - (userStock.highBuyPrice * userStock.quantity)}`** de ganho";
+
+                            embed.AddField($"{stock.name} `({stock.shortName})` {wentUpEmoji} | {stockSuccessEmoji}",
+                                totalString +
+                                $"\nMaior preço de compra: **`${userStock.highBuyPrice}`** | **`${userStock.highBuyPrice * userStock.quantity}`**" +
                                 $"\nQuantidade: **`{userStock.quantity}`**" +
-                                $"\n[:bar_chart: Gráfico de preços de suas ações](http://localhost:5500/stocks/chart.html?stock={stock.shortName}&data={chartData})", true);
+                                $"\n[:bar_chart: Gráfico de preços de suas ações]({Bot.WEBSITE}/stocks/chart.html?stock={stock.shortName}&data={chartData})", true);
                         }
 
                         await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
@@ -119,19 +122,75 @@ namespace BancoBahiaBot.Modules
                         user.money -= totalPrice;
                         StockHandler.AddStockToUser(user, stock, quantity);
 
-                        string reply = $"Você comprou {quantity} ações de `{stock.name} ({stock.shortName})` por `${stock.price * quantity}`!";
+                        string reply = $"Você comprou {quantity} ações de `{stock.name} ({stock.shortName})` por `${totalPrice}`!";
                         if (quantity == 1)
-                            reply = $"Você comprou {quantity} ação de `{stock.name} ({stock.shortName})` por `${stock.price * quantity}`!";
+                            reply = $"Você comprou {quantity} ação de `{stock.name} ({stock.shortName})` por `${totalPrice}`!";
 
                         await Context.Channel.SendMessageAsync(reply);
-                        Terminal.WriteLine($"{Context.User} ({Context.User.Id}) bought {quantity} {stock.id} for ${stock.price * quantity}!", Terminal.MessageType.INFO);
+                        Terminal.WriteLine($"{Context.User} ({Context.User.Id}) bought {quantity} {stock.id} for ${totalPrice}!", Terminal.MessageType.INFO);
 
                         break;
                     }
 
                 case "sell" or "vender":
                     {
-                        // sell stocks if possible
+                        if (!isStocksOpen)
+                        {
+                            await Context.Channel.SendMessageAsync("A bolsa de valores não está aberta agora!");
+                            return;
+                        }
+
+                        string[] buyArgs = StringUtils.GetAllRemainderTextAfter(args, 0).Split(" ");
+                        string stockString = string.Empty;
+                        int quantity = 1;
+
+                        foreach (string arg in buyArgs)
+                        {
+                            if (int.TryParse(arg, out int num))
+                            {
+                                quantity = num;
+                                continue;
+                            }
+
+                            stockString += arg + " ";
+                        }
+                        stockString = stockString.Trim();
+
+                        if (quantity < 1)
+                        {
+                            await Context.Channel.SendMessageAsync("Deve ser maior que 0!");
+                            return;
+                        }
+
+                        Stock stock = StockHandler.GetStock(stockString);
+                        if (stock == null)
+                        {
+                            await Context.Channel.SendMessageAsync("Esse ticker não existe!");
+                            return;
+                        }
+                        UserStock userStock = StockHandler.GetUserStock(stockString, user);
+                        if (userStock == null)
+                        {
+                            await Context.Channel.SendMessageAsync("Você não possui essa ação!");
+                            return;
+                        }
+                        if(userStock.quantity < quantity)
+                        {
+                            await Context.Channel.SendMessageAsync("Você não possui ações suficientes!");
+                            return;
+                        }
+
+                        int totalPrice = stock.price * quantity;
+
+                        user.money += totalPrice;
+                        StockHandler.RemoveStockFromUser(user, stock, quantity);
+
+                        string reply = $"Você vendeu {quantity} ações de `{stock.name} ({stock.shortName})` por `${totalPrice}`!";
+                        if (quantity == 1)
+                            reply = $"Você vendeu {quantity} ação de `{stock.name} ({stock.shortName})` por `${totalPrice}`!";
+
+                        await Context.Channel.SendMessageAsync(reply);
+                        Terminal.WriteLine($"{Context.User} ({Context.User.Id}) sold {quantity} {stock.id} for ${totalPrice}!", Terminal.MessageType.INFO);
 
                         break;
                     }
@@ -151,9 +210,9 @@ namespace BancoBahiaBot.Modules
             EmbedBuilder embed = new EmbedBuilder
             {
                 Title = $"**TICKERS DISPONÍVEIS**",
+                Description = "A bolsa atualiza a cada 5 minutos.",
                 Color = Color.Orange
             }.WithCurrentTimestamp().WithFooter(footer => { footer.Text = "Para ver mais sobre um ticker, use ?broker info <ticker>"; });
-
 
             foreach (Stock stock in StockHandler.stocks)
             {
@@ -161,7 +220,7 @@ namespace BancoBahiaBot.Modules
                 string wentUpEmoji = stock.wentUp ? ":arrow_up:" : ":arrow_down:";
 
                 embed.AddField($"{stock.name} `({stock.shortName})` {wentUpEmoji}",
-                    $"Preço: **`${stock.price}`**\n[:bar_chart: Gráfico de preços](http://localhost:5500/stocks/chart.html?stock={stock.shortName}&data={chartData})", true);
+                    $"Preço: **`${stock.price}`**\n[:bar_chart: Gráfico de preços]({Bot.WEBSITE}/stocks/chart.html?stock={stock.shortName}&data={chartData})", true);
             }
 
             await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());

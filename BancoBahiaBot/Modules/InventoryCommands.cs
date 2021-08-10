@@ -34,7 +34,7 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
         }
 
-        [Command("Inventory"), Alias("Itens")]
+        [Command("Inventory"), Alias("Inventario")]
         public async Task InventoryCommand(IUser mention)
         {
             User user = UserHandler.GetUser(mention.Id.ToString());

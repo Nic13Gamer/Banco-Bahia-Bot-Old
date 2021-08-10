@@ -63,6 +63,75 @@ namespace BancoBahiaBot.Modules
         }
 
         // DEBUG (JUST FOR NIC :) )
+        [Command("AddStock"), Alias("AdicionarAcao")]
+        public async Task AddStockCommand(string stockId, string quantity)
+        {
+            if (Context.User.Id != 345680337277288448) return;
+
+            int quantityInt;
+            try
+            {
+                quantityInt = int.Parse(quantity);
+            }
+            catch (Exception e)
+            {
+                Terminal.WriteLine($"Bot use error {e.Message} by {Context.User} ({Context.User.Id})", Terminal.MessageType.WARN);
+                await Context.Channel.SendMessageAsync("Deve ser um numero inteiro!");
+                return;
+            }
+
+            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            Stock stock = StockHandler.GetStock(stockId);
+            if (stock == null)
+            {
+                await Context.Channel.SendMessageAsync("Esse ticker não existe!");
+                return;
+            }
+
+            StockHandler.AddStockToUser(user, stock, quantityInt);
+
+            string reply = $"Adicionado {quantityInt} de {stock.name} ({stock.shortName}) para o ADM :place_of_worship::place_of_worship::place_of_worship:!";
+
+            await Context.Channel.SendMessageAsync(reply);
+
+            Terminal.WriteLine($"Added {quantityInt} stocks of {stock.id} to {Context.User} ({Context.User.Id})", Terminal.MessageType.INFO);
+        }
+
+        // DEBUG (JUST FOR NIC :) )
+        [Command("SetStockPrice"), Alias("SetarPrecoAcao")]
+        public async Task SetStockPriceCommand(string stockId, string quantity)
+        {
+            if (Context.User.Id != 345680337277288448) return;
+
+            int quantityInt;
+            try
+            {
+                quantityInt = int.Parse(quantity);
+            }
+            catch (Exception e)
+            {
+                Terminal.WriteLine($"Bot use error {e.Message} by {Context.User} ({Context.User.Id})", Terminal.MessageType.WARN);
+                await Context.Channel.SendMessageAsync("Deve ser um numero inteiro!");
+                return;
+            }
+
+            Stock stock = StockHandler.GetStock(stockId);
+            if (stock == null)
+            {
+                await Context.Channel.SendMessageAsync("Esse ticker não existe!");
+                return;
+            }
+
+            stock.price = quantityInt;
+
+            string reply = $"Setado ${quantityInt} de preço em {stock.name} ({stock.shortName}) para o ADM :place_of_worship::place_of_worship::place_of_worship:!";
+
+            await Context.Channel.SendMessageAsync(reply);
+
+            Terminal.WriteLine($"Setted ${quantityInt} price of {stock.id} by {Context.User} ({Context.User.Id})", Terminal.MessageType.INFO);
+        }
+
+        // DEBUG (JUST FOR NIC :) )
         [Command("AddMoney"), Alias("AdicionarDinheiro")]
         public async Task AddMoneyCommand(string quantity)
         {
@@ -100,7 +169,7 @@ namespace BancoBahiaBot.Modules
             foreach (UserProperty userProperty in userProperties)
                 userProperty.lastCollect = userProperty.lastCollect.AddDays(-1);
 
-            await Context.Channel.SendMessageAsync("Tempo de coleta de propriedades resatados para o ADM :place_of_worship::place_of_worship::place_of_worship:!");
+            await Context.Channel.SendMessageAsync("Tempo de coleta de propriedades resetados para o ADM :place_of_worship::place_of_worship::place_of_worship:!");
         }
 
         [Command("reac")]
