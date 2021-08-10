@@ -90,6 +90,7 @@ namespace BancoBahiaBot.Modules
             if (UserHandler.GetUser(mention.Id.ToString()).money < money)
             {
                 await msg.ModifyAsync(x => x.Content = $"{mention.Mention} não tinha {money} de dinheiro, então, o roubo foi cancelado.");
+                return;
             }
 
             if (success)
@@ -98,6 +99,7 @@ namespace BancoBahiaBot.Modules
                 UserHandler.GetUser(mention.Id.ToString()).money -= money;
                 
                 await msg.ModifyAsync(x => x.Content = $"{Context.User.Mention} conseguiu roubar {money} de {mention.Mention}! {Context.User.Mention} ganhou {money}.");
+                return;
             }
             else
             {

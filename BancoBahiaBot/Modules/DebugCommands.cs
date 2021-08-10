@@ -159,6 +159,33 @@ namespace BancoBahiaBot.Modules
         }
 
         // DEBUG (JUST FOR NIC :) )
+        [Command("AddMoney"), Alias("AdicionarDinheiro")]
+        public async Task AddMoneyCommand(IUser mention, string quantity)
+        {
+            if (Context.User.Id != 345680337277288448) return;
+
+            int money;
+            try
+            {
+                money = int.Parse(quantity);
+            }
+            catch (Exception e)
+            {
+                Terminal.WriteLine($"Bot use error {e.Message} by {Context.User} ({Context.User.Id})", Terminal.MessageType.WARN);
+                await Context.Channel.SendMessageAsync("Deve ser um numero inteiro!");
+                return;
+            }
+
+            UserHandler.GetUser(mention.Id.ToString()).money += money;
+
+            string reply = $"Adicionado {money} de dinheiro para {mention.Mention}!";
+
+            await Context.Channel.SendMessageAsync(reply);
+
+            Terminal.WriteLine($"Added {money} of money to {mention} ({mention.Id}) by {Context.User} ({Context.User.Id})", Terminal.MessageType.INFO);
+        }
+
+        // DEBUG (JUST FOR NIC :) )
         [Command("ResetPropertiesTime")]
         public async Task ResetPropertiesTimeCommand()
         {

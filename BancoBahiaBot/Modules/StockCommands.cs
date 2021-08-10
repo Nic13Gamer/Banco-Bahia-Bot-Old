@@ -18,7 +18,7 @@ namespace BancoBahiaBot.Modules
 
             switch (args[0])
             {
-                case "chart":
+                case "chart" or "grafico":
                     {
                         string stockString = StringUtils.GetAllRemainderTextAfter(args, 0);
 
@@ -48,6 +48,7 @@ namespace BancoBahiaBot.Modules
                         EmbedBuilder embed = new EmbedBuilder
                         {
                             Title = $"**PORTIFÓLIO**",
+                            Description = "A bolsa atualiza a cada 5 minutos.",
                             Color = Color.Orange
                         }.WithAuthor(Context.User).WithCurrentTimestamp().WithFooter(footer => { footer.Text = "Para ver mais sobre um ticker, use ?broker info <ticker>"; });
 

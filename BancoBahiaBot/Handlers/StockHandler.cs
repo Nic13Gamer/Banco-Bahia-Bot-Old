@@ -73,6 +73,14 @@ namespace BancoBahiaBot
                 price: 410
             );
 
+        public static Stock monoWavesLtda = new
+            (
+                id: "monoWavesLtda",
+                name: "MonoWaves LTDA",
+                shortName: "MWVL",
+                price: 370
+            );
+
         #endregion
 
         public static void Start()
@@ -84,6 +92,7 @@ namespace BancoBahiaBot
             stocks.Add(lyonStateInc);
             stocks.Add(lipezSportsCompany);
             stocks.Add(joteiElectronicsInc);
+            stocks.Add(monoWavesLtda);
 
             stocksUpdaterThread = new(StocksUpdater);
             stocksUpdaterThread.Start();
@@ -97,10 +106,10 @@ namespace BancoBahiaBot
             {
                 foreach (Stock stock in stocks)
                 {
-                    int chance = 65 + random.Next(-7, 5);
+                    int chance = 65 + random.Next(-4, 5);
                     int randomChance = random.Next(0, 101);
 
-                    int modifier = random.Next(6, 13);
+                    int modifier = random.Next(38, 88);
 
                     int newPrice = stock.price;
 
@@ -128,15 +137,15 @@ namespace BancoBahiaBot
                     newPrice = Math.Clamp(newPrice, 150, 10000);
                     stock.price = newPrice;
 
-                    if (stock.lastPrices.Count >= 48)
+                    if (stock.lastPrices.Count >= 46)
                         stock.lastPrices.RemoveAt(0);
 
                     stock.lastPrices.Add(stock.price);
                 }
 
-                SaveManager.SaveAll();
-
                 Thread.Sleep(300000); // 5 minutes
+
+                SaveManager.SaveAll();
             }
         }
 
@@ -226,12 +235,13 @@ namespace BancoBahiaBot
 
     class Stock
     {
-        public Stock(string id, string name, string shortName, int price)
+        public Stock(string id, string name, string shortName, int price/*, int stocksUpdatePayback*/)
         {
             this.id = id;
             this.name = name;
             this.shortName = shortName;
             this.price = price;
+            //this.stocksUpdatePayback = stocksUpdatePayback;
         }
 
         public string id;
@@ -239,6 +249,7 @@ namespace BancoBahiaBot
         public string shortName;
         public int price;
 
+        //public int stocksUpdatePayback;
         public bool wentUp = true;
 
         public readonly List<int> lastPrices = new();
