@@ -1,6 +1,9 @@
-﻿using Discord;
+﻿using BancoBahiaBot.Utils;
+
+using Discord;
 using Discord.Commands;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BancoBahiaBot.Modules
@@ -10,7 +13,7 @@ namespace BancoBahiaBot.Modules
         readonly Random random = new();
 
         [Command("Pergunta"), Alias("Question")]
-        public async Task QuestionCommand([Remainder]string args)
+        public async Task QuestionCommand([Remainder] string args)
         {
             bool chance = Convert.ToBoolean(random.Next(0, 2));
             string reply = $"{args} : {chance}\n\nPergunta feita por: {Context.User.Mention}!";
@@ -197,6 +200,25 @@ namespace BancoBahiaBot.Modules
                 userProperty.lastCollect = userProperty.lastCollect.AddDays(-1);
 
             await Context.Channel.SendMessageAsync("Tempo de coleta de propriedades resetados para o ADM :place_of_worship::place_of_worship::place_of_worship:!");
+        }
+
+        [Command("Api")]
+        public async Task ApiCommand()
+        {
+            var content = new Dictionary<string, string>
+            {
+                { "msg", "sus" }
+            };
+
+            HttpResponse response = await NetUtils.APIRequest(Bot.WEBSITE_API + "/test", content);
+
+            if(response.status == 403)
+            {
+                await Context.Channel.SendMessageAsync(response.content);
+                return;
+            }
+
+            await Context.Channel.SendFileAsync(response.content);
         }
 
         [Command("reac")]

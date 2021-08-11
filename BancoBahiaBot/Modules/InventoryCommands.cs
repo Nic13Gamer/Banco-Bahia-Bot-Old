@@ -34,34 +34,6 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
         }
 
-        [Command("Inventory"), Alias("Inventario")]
-        public async Task InventoryCommand(IUser mention)
-        {
-            User user = UserHandler.GetUser(mention.Id.ToString());
-            UserItem[] userInventory = user.inventory;
-            string items = string.Empty;
-
-            foreach (UserItem userItem in userInventory)
-            {
-                items += $"**`{userItem.item.name}`** : {userItem.quantity}\n";
-            }
-
-            EmbedBuilder embed = new EmbedBuilder
-            {
-                Title = "**INVENTÁRIO**",
-                Color = Color.Orange
-            }.WithAuthor(mention).WithCurrentTimestamp().WithFooter(footer => footer.Text = "Para ver mais sobre um item, use ?item <nome>");
-
-            if (items != string.Empty)
-                embed.AddField("> Itens possuídos",
-                    items);
-            else
-                embed.AddField("> Itens possuídos",
-                    $"`{mention.Username} ainda não possui nenhum item`");
-
-            await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
-        }
-
         [Command("SellItem"), Alias("VenderItem")]
         public async Task SellItemCommand([Remainder]string msg)
         {
