@@ -50,6 +50,8 @@ namespace BancoBahiaBot
 
                         await context.Channel.SendMessageAsync(reply);
                     }
+
+                    SaveManager.SaveAll();
                 });
                 thread.Start();
             }

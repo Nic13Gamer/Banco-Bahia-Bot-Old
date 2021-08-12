@@ -8,8 +8,6 @@ namespace BancoBahiaBot
 {
     class SaveManager
     {
-        static int autosaveSecondsInterval = 7;
-        static Thread autosaveThread = null;
 
         static readonly string botDataJsonPath = Bot.DATA_PATH + "/botData.json";
 
@@ -142,12 +140,6 @@ namespace BancoBahiaBot
 
             foreach (JSONObject stock in json["stocks"])
                 LoadStockFromJson(stock);
-
-            if(autosaveThread == null)
-            {
-                autosaveThread = new(Autosave);
-                autosaveThread.Start();
-            }
         }
 
         static void LoadUserFromJson(JSONObject userJson)
@@ -246,17 +238,6 @@ namespace BancoBahiaBot
             {
                 Terminal.WriteLine($"Error while loading stock data: {e.Message} | Stock: {stockJson["id"]}", Terminal.MessageType.ERROR);
                 return;
-            }
-        }
-
-
-        static void Autosave()
-        {
-            while (true)
-            {
-                SaveAll();
-
-                Thread.Sleep(autosaveSecondsInterval * 1000);
             }
         }
     }
