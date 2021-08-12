@@ -2,12 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace BancoBahiaBot
 {
     class SaveManager
     {
-        static readonly string botDataPath = Bot.DATA_PATH + "/botData.json";
+        static int autosaveSecondsInterval = 7;
+        static Thread autosaveThread = null;
+
+        static readonly string botDataJsonPath = Bot.DATA_PATH + "/botData.json";
 
         public static void SaveAll()
         {
@@ -119,7 +123,7 @@ namespace BancoBahiaBot
 
             try
             {
-                File.WriteAllText(botDataPath, json.ToString());
+                File.WriteAllText(botDataJsonPath, json.ToString());
             }
             catch (Exception e)
             {
@@ -129,8 +133,8 @@ namespace BancoBahiaBot
 
         public static void Load()
         {
-            if (!File.Exists(botDataPath)) File.Create(botDataPath);
-            string rawJson = File.ReadAllText(botDataPath); if (rawJson.Trim() == string.Empty) { SaveAll(); rawJson = File.ReadAllText(botDataPath); }
+            if (!File.Exists(botDataJsonPath)) File.Create(botDataJsonPath);
+            string rawJson = File.ReadAllText(botDataJsonPath); if (rawJson.Trim() == string.Empty) { SaveAll(); rawJson = File.ReadAllText(botDataJsonPath); }
             JSONObject json = (JSONObject)JSON.Parse(rawJson);
 
             foreach (JSONObject user in json["users"])
@@ -138,6 +142,12 @@ namespace BancoBahiaBot
 
             foreach (JSONObject stock in json["stocks"])
                 LoadStockFromJson(stock);
+
+            if(autosaveThread == null)
+            {
+                autosaveThread = new(Autosave);
+                autosaveThread.Start();
+            }
         }
 
         static void LoadUserFromJson(JSONObject userJson)
@@ -236,6 +246,17 @@ namespace BancoBahiaBot
             {
                 Terminal.WriteLine($"Error while loading stock data: {e.Message} | Stock: {stockJson["id"]}", Terminal.MessageType.ERROR);
                 return;
+            }
+        }
+
+
+        static void Autosave()
+        {
+            while (true)
+            {
+                SaveAll();
+
+                Thread.Sleep(autosaveSecondsInterval * 1000);
             }
         }
     }

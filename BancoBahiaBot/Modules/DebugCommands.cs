@@ -207,12 +207,12 @@ namespace BancoBahiaBot.Modules
         {
             var content = new Dictionary<string, string>
             {
-                { "msg", "sus" }
+                { "msg", Context.User.GetAvatarUrl() }
             };
 
-            HttpResponse response = await NetUtils.APIRequest(Bot.WEBSITE_API + "/test", content);
+            HttpResponse response = await NetUtils.APIRequest(Bot.WEBSITE_API + "/img", content);
 
-            if(response.status == 403)
+            if(response.status != 200)
             {
                 await Context.Channel.SendMessageAsync(response.content);
                 return;

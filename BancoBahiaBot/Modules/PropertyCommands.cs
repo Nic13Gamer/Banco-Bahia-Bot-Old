@@ -81,15 +81,15 @@ namespace BancoBahiaBot.Modules
             {
                 if (user.money < userProperty.property.tax) continue;
 
-                if (propertiesString == string.Empty)
-                    propertiesString += userProperty.property.name;
-                else
-                    propertiesString += ", " + userProperty.property.name;
-
                 DateTime lastCollect = userProperty.lastCollect;
 
                 if (lastCollect.AddHours(12) <= DateTime.Now)
                 {
+                    if (propertiesString == string.Empty)
+                        propertiesString += userProperty.property.name;
+                    else
+                        propertiesString += ", " + userProperty.property.name;
+
                     UserItem[] items = userProperty.property.items;
                     string itemString = string.Empty;
 

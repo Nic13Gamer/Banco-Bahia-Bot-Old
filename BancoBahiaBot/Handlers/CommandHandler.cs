@@ -1,6 +1,7 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BancoBahiaBot
@@ -20,34 +21,40 @@ namespace BancoBahiaBot
             client.MessageReceived += HandleCommand;
         }
 
-        async Task HandleCommand(SocketMessage s)
+        Task HandleCommand(SocketMessage s)
         {
             var msg = s as SocketUserMessage;
-            if (msg == null) return;
+            if (msg == null) return null;
 
             var context = new SocketCommandContext(client, msg);
 
             int argPos = 0;
             if (msg.HasStringPrefix("?", ref argPos))
             {
-                if (context.User.IsBot || context.IsPrivate) return;
+                if (context.User.IsBot || context.IsPrivate) return null;
 
                 UserHandler.CreateUser(context.User.Id.ToString());
-                var result = await service.ExecuteAsync(context, argPos, null);
-                SaveManager.SaveAll();
-
-                if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
+                
+                Thread thread = new(async () =>
                 {
-                    string reply = "Alguma coisa deu errado! Motivo: " + result.ErrorReason;
+                    var result = await service.ExecuteAsync(context, argPos, null);
 
-                    if (result.Error == CommandError.BadArgCount)
-                        reply = context.Message + " tem poucos ou muitos argumentos!";
+                    if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
+                    {
+                        string reply = "Alguma coisa deu errado! Motivo: " + result.ErrorReason;
 
-                    Terminal.WriteLine($"Bot use error [{result.ErrorReason}] by {context.User} ({context.User.Id})", Terminal.MessageType.WARN);
+                        if (result.Error == CommandError.BadArgCount)
+                            reply = context.Message + " tem poucos ou muitos argumentos!";
 
-                    await context.Channel.SendMessageAsync(reply);
-                }
+                        Terminal.WriteLine($"Bot use error [{result.ErrorReason}] by {context.User} ({context.User.Id})", Terminal.MessageType.WARN);
+
+                        await context.Channel.SendMessageAsync(reply);
+                    }
+                });
+                thread.Start();
             }
+
+            return null;
         }
     }
 }
