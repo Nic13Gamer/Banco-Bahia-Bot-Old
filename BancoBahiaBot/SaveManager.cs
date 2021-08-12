@@ -2,13 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
+using Newtonsoft.Json;
 
 namespace BancoBahiaBot
 {
     class SaveManager
     {
-
         static readonly string botDataJsonPath = Bot.DATA_PATH + "/botData.json";
 
         public static void SaveAll()
@@ -240,5 +239,26 @@ namespace BancoBahiaBot
                 return;
             }
         }
+
+        #region Bot options
+
+        public static BotOptions LoadBotOptions()
+        {
+            string path = Bot.DATA_PATH + "/config.json";
+            string json = File.ReadAllText(path).Trim();
+
+            BotOptions options = JsonConvert.DeserializeObject<BotOptions>(json);
+            return options;
+        }
+
+        public class BotOptions
+        {
+            public string token;
+            public string apiKey;
+
+            public string prefix;
+        }
+
+        #endregion
     }
 }

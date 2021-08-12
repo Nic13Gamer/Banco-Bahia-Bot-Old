@@ -203,14 +203,14 @@ namespace BancoBahiaBot.Modules
         }
 
         [Command("Api")]
-        public async Task ApiCommand()
+        public async Task ApiCommand(string msg)
         {
             var content = new Dictionary<string, string>
             {
                 { "msg", Context.User.GetAvatarUrl() }
             };
 
-            HttpResponse response = await NetUtils.ApiRequest(Bot.WEBSITE_API + "/img", content);
+            HttpResponse response = await NetUtils.ApiRequest(Bot.WEBSITE_API + $"/{msg}", content);
 
             if(response.status != 200)
             {

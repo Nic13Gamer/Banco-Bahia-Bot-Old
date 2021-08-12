@@ -11,8 +11,11 @@ namespace BancoBahiaBot
         readonly DiscordSocketClient client;
         readonly CommandService service;
 
-        public CommandHandler(DiscordSocketClient _client)
+        readonly string prefix;
+
+        public CommandHandler(DiscordSocketClient _client, string _prefix)
         {
+            prefix = _prefix;
             client = _client;
             service = new CommandService();
 
@@ -29,7 +32,7 @@ namespace BancoBahiaBot
             var context = new SocketCommandContext(client, msg);
 
             int argPos = 0;
-            if (msg.HasStringPrefix("?", ref argPos))
+            if (msg.HasStringPrefix(prefix, ref argPos))
             {
                 if (context.User.IsBot || context.IsPrivate) return null;
 
