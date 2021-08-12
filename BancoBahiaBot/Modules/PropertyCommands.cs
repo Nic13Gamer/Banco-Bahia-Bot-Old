@@ -10,8 +10,8 @@ namespace BancoBahiaBot.Modules
         [Command("Collect"), Alias("Coletar")]
         public async Task CollectCommand([Remainder]string property)
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id.ToString()));
+            User user = UserHandler.GetUser(Context.User.Id);
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
             if(PropertyHandler.GetProperty(property) == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
@@ -64,7 +64,7 @@ namespace BancoBahiaBot.Modules
         [Command("CollectAll"), Alias("ColetarTudo")]
         public async Task CollectAllCommand()
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
             UserProperty[] userProperties = user.properties;
 
             if(userProperties.Length == 0)
@@ -126,9 +126,9 @@ namespace BancoBahiaBot.Modules
         [Command("Buy"), Alias("Comprar")]
         public async Task BuyCommand([Remainder]string property)
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
 
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id.ToString()));
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
             if (PropertyHandler.GetProperty(property) == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
@@ -165,8 +165,8 @@ namespace BancoBahiaBot.Modules
         [Command("SellProperty"), Alias("VenderPropriedade")]
         public async Task SellPropertyCommand([Remainder] string property)
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id.ToString()));
+            User user = UserHandler.GetUser(Context.User.Id);
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
             if (PropertyHandler.GetProperty(property) == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
@@ -190,7 +190,7 @@ namespace BancoBahiaBot.Modules
         [Command("Properties"), Alias("Propriedades")]
         public async Task PropertiesCommand()
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
             UserProperty[] userProperties = user.properties;
             string ownedProperties = string.Empty;
             string existingProperties = string.Empty;
@@ -235,7 +235,7 @@ namespace BancoBahiaBot.Modules
         {
             if (mention.IsBot) return;
 
-            User user = UserHandler.GetUser(mention.Id.ToString());
+            User user = UserHandler.GetUser(mention.Id);
             UserProperty[] userProperties = user.properties;
             string ownedProperties = string.Empty;
             string existingProperties = string.Empty;
@@ -278,7 +278,7 @@ namespace BancoBahiaBot.Modules
         [Command("Property"), Alias("Propriedade")]
         public async Task PropertyCommand([Remainder]string property)
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
             Property chosenProperty = PropertyHandler.GetProperty(property);
             if(chosenProperty == null)
             {
@@ -286,7 +286,7 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id.ToString()));
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
             string ownedEmoji = userProperty == null ? ":x:" : ":white_check_mark:";
 
             EmbedBuilder embed = new EmbedBuilder

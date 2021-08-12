@@ -33,7 +33,7 @@ namespace BancoBahiaBot
             {
                 if (context.User.IsBot || context.IsPrivate) return null;
 
-                UserHandler.CreateUser(context.User.Id.ToString());
+                UserHandler.CreateUser(context.User.Id);
                 
                 Thread thread = new(async () =>
                 {

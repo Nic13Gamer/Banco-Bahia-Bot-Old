@@ -8,8 +8,7 @@ namespace BancoBahiaBot
 {
     class ReactionHandler
     {
-        public static DiscordSocketClient client;
-        public static void Start() => client.ReactionAdded += ReactionAdded;
+        public static void Start(DiscordSocketClient client) => client.ReactionAdded += ReactionAdded;
 
         static readonly List<ReactionRequest> pendingReactionRequests = new();
 

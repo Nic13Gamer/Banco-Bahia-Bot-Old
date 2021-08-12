@@ -12,7 +12,7 @@ namespace BancoBahiaBot.Modules
         [Command("Atm"), Alias("Money")]
         public async Task AtmCommand()
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
             string reply = $"{Context.User.Mention} tem {user.money} de dinheiro!";
 
             await Context.Channel.SendMessageAsync(reply);
@@ -23,7 +23,7 @@ namespace BancoBahiaBot.Modules
         {
             if (mention.IsBot) return;
 
-            User user = UserHandler.GetUser(mention.Id.ToString());
+            User user = UserHandler.GetUser(mention.Id);
             string reply = $"{mention.Mention} tem {user.money} de dinheiro!";
 
             await Context.Channel.SendMessageAsync(reply);
@@ -51,8 +51,8 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
-            User mentionUser = UserHandler.GetUser(mention.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
+            User mentionUser = UserHandler.GetUser(mention.Id);
 
             string reply = $"{quantity} de dinheiro foi transferido para {mention.Mention}!";
 
@@ -74,7 +74,7 @@ namespace BancoBahiaBot.Modules
         {
             if (mention.IsBot || mention == Context.User) return;
 
-            if (UserHandler.GetUser(Context.User.Id.ToString()).money < 2000)
+            if (UserHandler.GetUser(Context.User.Id).money < 2000)
             {
                 await Context.Channel.SendMessageAsync("Você deve ter no mínimo 2000 de dinheiro para poder roubar alguém!");
                 return;
@@ -87,7 +87,7 @@ namespace BancoBahiaBot.Modules
 
             await Task.Delay(3000);
 
-            if (UserHandler.GetUser(mention.Id.ToString()).money < money)
+            if (UserHandler.GetUser(mention.Id).money < money)
             {
                 await msg.ModifyAsync(x => x.Content = $"{mention.Mention} não tinha {money} de dinheiro, então, o roubo foi cancelado.");
                 return;
@@ -95,16 +95,16 @@ namespace BancoBahiaBot.Modules
 
             if (success)
             {
-                UserHandler.GetUser(Context.User.Id.ToString()).money += money;
-                UserHandler.GetUser(mention.Id.ToString()).money -= money;
+                UserHandler.GetUser(Context.User.Id).money += money;
+                UserHandler.GetUser(mention.Id).money -= money;
                 
                 await msg.ModifyAsync(x => x.Content = $"{Context.User.Mention} conseguiu roubar {money} de {mention.Mention}! {Context.User.Mention} ganhou {money}.");
                 return;
             }
             else
             {
-                UserHandler.GetUser(Context.User.Id.ToString()).money -= money * 2;
-                UserHandler.GetUser(mention.Id.ToString()).money += money * 2;
+                UserHandler.GetUser(Context.User.Id).money -= money * 2;
+                UserHandler.GetUser(mention.Id).money += money * 2;
 
                 await msg.ModifyAsync(x => x.Content = $"{Context.User.Mention} fracassou o roubo e teve que pagar uma multa do dobro do dinheiro roubado! {mention.Mention} ganhou {money * 2}.");
             }
@@ -113,7 +113,7 @@ namespace BancoBahiaBot.Modules
         [Command("Daily")]
         public async Task DailyCommand()
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
             DateTime lastDaily = user.lastDaily;
             string reply;
             

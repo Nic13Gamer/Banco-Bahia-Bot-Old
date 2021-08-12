@@ -7,16 +7,16 @@ namespace BancoBahiaBot
     {
         static readonly List<User> users = new();
 
-        public static User GetUser(string id) => CreateUser(id);
+        public static User GetUser(ulong id) => CreateUser(id);
 
-        public static User CreateUser(string id)
+        public static User CreateUser(ulong id)
         {
             foreach (User _user in users)
-                if (_user.id == id) return _user;
+                if (_user.id == id.ToString()) return _user;
 
             User user = new
                 (
-                    id: id,
+                    id: id.ToString(),
                     money: 0,
                     lastDaily: DateTime.Now.AddDays(-1),
                     properties: Array.Empty<UserProperty>(),

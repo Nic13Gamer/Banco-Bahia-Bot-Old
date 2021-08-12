@@ -13,7 +13,7 @@ namespace BancoBahiaBot.Modules
         [Command("Broker")]
         public async Task BrokerCommand([Remainder] string msg)
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
             string[] args = StringUtils.RemoveAccents(msg.ToLower()).Split(" ");
 
             switch (args[0])

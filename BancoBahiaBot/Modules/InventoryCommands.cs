@@ -9,7 +9,7 @@ namespace BancoBahiaBot.Modules
         [Command("Inventory"), Alias("Inventario")]
         public async Task InventoryCommand()
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
             UserItem[] userInventory = user.inventory;
             string items = string.Empty;
 
@@ -37,7 +37,7 @@ namespace BancoBahiaBot.Modules
         [Command("SellItem"), Alias("VenderItem")]
         public async Task SellItemCommand([Remainder]string msg)
         {
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
 
             string[] args = msg.Split(" ");
             string itemString = string.Empty;
@@ -67,7 +67,7 @@ namespace BancoBahiaBot.Modules
                 await Context.Channel.SendMessageAsync("Este item não existe!");
                 return;
             }
-            UserItem userItem = ItemHandler.GetUserItem(item, UserHandler.GetUser(Context.User.Id.ToString()));
+            UserItem userItem = ItemHandler.GetUserItem(item, UserHandler.GetUser(Context.User.Id));
             if (userItem == null)
             {
                 await Context.Channel.SendMessageAsync("Você não possui este item!");

@@ -48,7 +48,7 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
             Item item = ItemHandler.GetItem(itemId);
             if (item == null)
             {
@@ -83,7 +83,7 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            User user = UserHandler.GetUser(Context.User.Id.ToString());
+            User user = UserHandler.GetUser(Context.User.Id);
             Stock stock = StockHandler.GetStock(stockId);
             if (stock == null)
             {
@@ -152,7 +152,7 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            UserHandler.GetUser(Context.User.Id.ToString()).money += money;
+            UserHandler.GetUser(Context.User.Id).money += money;
 
             string reply = $"Adicionado {money} de dinheiro para o ADM :place_of_worship::place_of_worship::place_of_worship:!";
 
@@ -179,7 +179,7 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            UserHandler.GetUser(mention.Id.ToString()).money += money;
+            UserHandler.GetUser(mention.Id).money += money;
 
             string reply = $"Adicionado {money} de dinheiro para {mention.Mention}!";
 
@@ -194,7 +194,7 @@ namespace BancoBahiaBot.Modules
         {
             if (Context.User.Id != 345680337277288448) return;
 
-            UserProperty[] userProperties = UserHandler.GetUser(Context.User.Id.ToString()).properties;
+            UserProperty[] userProperties = UserHandler.GetUser(Context.User.Id).properties;
 
             foreach (UserProperty userProperty in userProperties)
                 userProperty.lastCollect = userProperty.lastCollect.AddDays(-1);
@@ -210,7 +210,7 @@ namespace BancoBahiaBot.Modules
                 { "msg", Context.User.GetAvatarUrl() }
             };
 
-            HttpResponse response = await NetUtils.APIRequest(Bot.WEBSITE_API + "/img", content);
+            HttpResponse response = await NetUtils.ApiRequest(Bot.WEBSITE_API + "/img", content);
 
             if(response.status != 200)
             {

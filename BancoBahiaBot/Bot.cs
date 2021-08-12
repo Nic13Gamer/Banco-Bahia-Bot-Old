@@ -36,8 +36,7 @@ namespace BancoBahiaBot
 
             SaveManager.Load();
 
-            ReactionHandler.client = client;
-            ReactionHandler.Start();
+            ReactionHandler.Start(client);
 
             Terminal.WriteLine("Bot started successfully!", Terminal.MessageType.INFO);
 
