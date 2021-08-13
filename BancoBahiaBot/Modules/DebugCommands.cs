@@ -214,11 +214,11 @@ namespace BancoBahiaBot.Modules
 
             if(response.status != 200)
             {
-                await Context.Channel.SendMessageAsync(response.content);
+                await Context.Channel.SendMessageAsync(response.content + $" | Por: {Context.User.Mention}");
                 return;
             }
 
-            await Context.Channel.SendFileAsync(response.content);
+            await Context.Channel.SendFileAsync(response.content, "Por: " + Context.User.Mention);
         }
 
         [Command("reac")]

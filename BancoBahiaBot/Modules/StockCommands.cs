@@ -35,7 +35,7 @@ namespace BancoBahiaBot.Modules
                         {
                             Title = $"**{stock.name}**",
                             Color = Color.Orange,
-                            Url = $"{Bot.WEBSITE}/stocks/chart.html?stock={stock.shortName}&data={data}"
+                            Url = $"{Bot.WEBSITE}/stocks/chart.html?multiplier={1}&stock={stock.shortName}&data={data}"
                         }.WithCurrentTimestamp().WithFooter(footer => { footer.Text = $"Gráfico das últimas 4 horas de {stock.shortName}"; });
 
                         await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
@@ -57,7 +57,7 @@ namespace BancoBahiaBot.Modules
                         {
                             Stock stock = userStock.stock;
 
-                            string chartData = GetStockLastPricesString(stock, userStock.quantity);
+                            string chartData = GetStockLastPricesString(stock);
                             string wentUpEmoji = stock.wentUp ? ":arrow_up:" : ":arrow_down:";
                             string stockSuccessEmoji = stock.price * userStock.quantity > userStock.highBuyPrice * userStock.quantity ? ":green_circle:" : ":red_circle:";
 
@@ -68,7 +68,7 @@ namespace BancoBahiaBot.Modules
                                 totalString +
                                 $"\nMaior preço de compra: **`${userStock.highBuyPrice}`** | **`${userStock.highBuyPrice * userStock.quantity}`**" +
                                 $"\nQuantidade: **`{userStock.quantity}`**" +
-                                $"\n[:bar_chart: Gráfico de preços de suas ações]({Bot.WEBSITE}/stocks/chart.html?stock={stock.shortName}&data={chartData})", true);
+                                $"\n[:bar_chart: Gráfico de preços de suas ações]({Bot.WEBSITE}/stocks/chart.html?multiplier={userStock.quantity}&stock={stock.shortName}&data={chartData})", true);
                         }
 
                         await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
@@ -221,21 +221,21 @@ namespace BancoBahiaBot.Modules
                 string wentUpEmoji = stock.wentUp ? ":arrow_up:" : ":arrow_down:";
 
                 embed.AddField($"{stock.name} `({stock.shortName})` {wentUpEmoji}",
-                    $"Preço: **`${stock.price}`**\n[:bar_chart: Gráfico de preços]({Bot.WEBSITE}/stocks/chart.html?stock={stock.shortName}&data={chartData})", true);
+                    $"Preço: **`${stock.price}`**\n[:bar_chart: Gráfico de preços]({Bot.WEBSITE}/stocks/chart.html?multiplier={1}&stock={stock.shortName}&data={chartData})", true);
             }
 
             await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
         }
 
-        static string GetStockLastPricesString(Stock stock, int multiplier = 1)
+        static string GetStockLastPricesString(Stock stock)
         {
             string data = string.Empty;
             foreach (int price in stock.lastPrices)
             {
                 if (data == string.Empty)
-                    data += price * multiplier;
+                    data += price;
                 else
-                    data += "," + price * multiplier;
+                    data += "," + price;
             }
 
             return data;
