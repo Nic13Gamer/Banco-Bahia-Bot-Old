@@ -241,6 +241,9 @@ namespace BancoBahiaBot.Modules
         [Command("audio")]
         public async Task JoinChannel(IVoiceChannel channel = null)
         {
+            await Context.Channel.SendMessageAsync("Comando desabilitado");
+            return;
+
             // Get the audio channel
             channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
             if (channel == null) { await Context.Channel.SendMessageAsync("User must be in a voice channel, or a voice channel must be passed as an argument."); return; }
