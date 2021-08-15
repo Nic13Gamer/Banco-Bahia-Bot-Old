@@ -18,30 +18,6 @@ namespace BancoBahiaBot.Modules
 
             switch (args[0])
             {
-                case "chart" or "grafico":
-                    {
-                        string stockString = StringUtils.GetAllRemainderTextAfter(args, 0);
-
-                        Stock stock = StockHandler.GetStock(stockString);
-                        if(stock == null)
-                        {
-                            await Context.Channel.SendMessageAsync("Esse ticker não existe!");
-                            return;
-                        }
-
-                        string data = GetStockLastPricesString(stock);
-
-                        EmbedBuilder embed = new EmbedBuilder
-                        {
-                            Title = $"**{stock.name}**",
-                            Color = Color.Orange,
-                            Url = $"{Bot.WEBSITE}/stocks/chart.html?multiplier={1}&stock={stock.shortName}&data={data}"
-                        }.WithCurrentTimestamp().WithFooter(footer => { footer.Text = $"Gráfico das últimas 4 horas de {stock.shortName}"; });
-
-                        await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
-
-                        break;
-                    }
 
                 case "portifolio" or "portfolio":
                     {
@@ -67,8 +43,7 @@ namespace BancoBahiaBot.Modules
                             embed.AddField($"{stock.name} `({stock.shortName})` {wentUpEmoji} | {stockSuccessEmoji}",
                                 totalString +
                                 $"\nMaior preço de compra: **`${userStock.highBuyPrice}`** | **`${userStock.highBuyPrice * userStock.quantity}`**" +
-                                $"\nQuantidade: **`{userStock.quantity}`**" +
-                                $"\n[:bar_chart: Gráfico de preços de suas ações]({Bot.WEBSITE}/stocks/chart.html?multiplier={userStock.quantity}&stock={stock.shortName}&data={chartData})", true);
+                                $"\nQuantidade: **`{userStock.quantity}`**", true);
                         }
 
                         await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
@@ -199,6 +174,7 @@ namespace BancoBahiaBot.Modules
                 case "info":
                     {
                         // show information about a certain ticker
+                        // show chart about a certain ticker
 
                         break;
                     }
@@ -221,7 +197,7 @@ namespace BancoBahiaBot.Modules
                 string wentUpEmoji = stock.wentUp ? ":arrow_up:" : ":arrow_down:";
 
                 embed.AddField($"{stock.name} `({stock.shortName})` {wentUpEmoji}",
-                    $"Preço: **`${stock.price}`**\n[:bar_chart: Gráfico de preços]({Bot.WEBSITE}/stocks/chart.html?multiplier={1}&stock={stock.shortName}&data={chartData})", true);
+                    $"Preço: **`${stock.price}`**", true);
             }
 
             await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
