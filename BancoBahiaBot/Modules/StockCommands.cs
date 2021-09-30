@@ -18,7 +18,6 @@ namespace BancoBahiaBot.Modules
 
             switch (args[0])
             {
-
                 case "portifolio" or "portfolio":
                     {
                         EmbedBuilder embed = new EmbedBuilder
@@ -191,7 +190,7 @@ namespace BancoBahiaBot.Modules
                 Color = Color.Orange
             }.WithCurrentTimestamp().WithFooter(footer => { footer.Text = "Para ver mais sobre um ticker, use ?broker info <ticker>"; });
 
-            foreach (Stock stock in StockHandler.stocks)
+            foreach (Stock stock in StockHandler.GetStocks())
             {
                 string chartData = GetStockLastPricesString(stock);
                 string wentUpEmoji = stock.wentUp ? ":arrow_up:" : ":arrow_down:";

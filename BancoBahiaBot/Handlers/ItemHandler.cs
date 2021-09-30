@@ -62,7 +62,7 @@ namespace BancoBahiaBot
         public static UserItem GetUserItem(Item item, User user)
         {
             UserItem userItem = null;
-            foreach (UserItem _userItem in user.inventory)
+            foreach (UserItem _userItem in user.items)
             {
                 if(_userItem.item == item)
                 {
@@ -76,14 +76,14 @@ namespace BancoBahiaBot
 
         public static void AddItemToUser(User user, Item item, int quantity = 1)
         {
-            List<UserItem> userInventory = user.inventory.ToList();
+            List<UserItem> userInventory = user.items.ToList();
 
             foreach (UserItem userItem in userInventory)
             {
                 if(userItem.item == item)
                 {
                     userItem.quantity += quantity;
-                    user.inventory = userInventory.ToArray();
+                    user.items = userInventory.ToArray();
 
                     return;
                 }
@@ -93,14 +93,14 @@ namespace BancoBahiaBot
 
             userInventory.Add(newUserItem);
 
-            user.inventory = userInventory.ToArray();
+            user.items = userInventory.ToArray();
         }
 
         public static void RemoveItemFromUser(User user, Item item, int quantity = 1)
         {
-            List<UserItem> userInventory = user.inventory.ToList();
+            List<UserItem> userInventory = user.items.ToList();
 
-            foreach (UserItem userItem in user.inventory)
+            foreach (UserItem userItem in user.items)
             {
                 if (userItem.item == item)
                 {
@@ -113,7 +113,7 @@ namespace BancoBahiaBot
                 }
             }
 
-            user.inventory = userInventory.ToArray();
+            user.items = userInventory.ToArray();
         }
     }
 

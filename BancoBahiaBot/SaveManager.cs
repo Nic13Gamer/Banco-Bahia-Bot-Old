@@ -1,8 +1,8 @@
-﻿using SimpleJSON;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace BancoBahiaBot
 {
@@ -12,115 +12,77 @@ namespace BancoBahiaBot
 
         public static void SaveAll()
         {
-            JSONObject json = new();
+            BotData data = new();
 
-            #region Add users to JSON
+            #region Save users
 
-            JSONObject usersJson = new();
+            List<SaveUser> saveUsers = new();
 
             foreach (User user in UserHandler.GetUsers())
             {
-                JSONObject userJson = new();
-
-                userJson.Add("id", user.id);
-                userJson.Add("money", user.money);
-                userJson.Add("lastDaily", user.lastDaily.ToString());
+                SaveUser saveUser = new(user.id, user.money, user.lastDaily);
 
                 #region Save properties
 
-                JSONObject userProperties = new();
-
+                List<SaveUser.SaveUserProperty> properties = new();
                 foreach (UserProperty property in user.properties)
                 {
-                    JSONObject userProperty = new();
-
-                    userProperty.Add("id", property.property.id);
-                    userProperty.Add("lastCollect", property.lastCollect.ToString());
-
-                    userProperties.Add(property.property.id, userProperty);
+                    properties.Add(new(property.property.id, property.lastCollect));
                 }
 
-                userJson.Add("properties", userProperties);
+                saveUser.properties = properties.ToArray();
 
                 #endregion
 
-                #region Save inventory
+                #region Save items
 
-                JSONObject userInventory = new();
-
-                foreach (UserItem item in user.inventory)
+                List<SaveUser.SaveUserItem> items = new();
+                foreach (UserItem item in user.items)
                 {
-                    JSONObject userItem = new();
-
-                    userItem.Add("id", item.item.id);
-                    userItem.Add("quantity", item.quantity);
-
-                    userInventory.Add(item.item.id, userItem);
+                    items.Add(new(item.item.id, item.quantity));
                 }
 
-                userJson.Add("inventory", userInventory);
+                saveUser.items = items.ToArray();
 
                 #endregion
 
                 #region Save stocks
 
-                JSONObject userStocks = new();
-
+                List<SaveUser.SaveUserStock> stocks = new();
                 foreach (UserStock stock in user.stocks)
                 {
-                    JSONObject userStock = new();
-
-                    userStock.Add("id", stock.stock.id);
-                    userStock.Add("quantity", stock.quantity);
-                    userStock.Add("highBuyPrice", stock.highBuyPrice);
-
-                    userStocks.Add(stock.stock.id, userStock);
+                    stocks.Add(new(stock.stock.id, stock.quantity, stock.highBuyPrice));
                 }
 
-                userJson.Add("stocks", userStocks);
+                saveUser.stocks = stocks.ToArray();
 
                 #endregion
 
-                usersJson.Add(user.id, userJson);
+                saveUsers.Add(saveUser);
             }
 
-            json.Add("users", usersJson);
+            data.users = saveUsers.ToArray();
 
             #endregion
 
-            #region Add stocks to JSON
+            #region Save stocks
 
-            JSONObject stocksJson = new();
+            List<SaveStock> saveStocks = new();
 
-            foreach (Stock stock in StockHandler.stocks)
+            foreach (Stock stock in StockHandler.GetStocks())
             {
-                JSONObject stockJson = new();
-
-                stockJson.Add("id", stock.id);
-                stockJson.Add("price", stock.price);
-                stockJson.Add("wentUp", stock.wentUp);
-
-                #region Save last prices
-
-                JSONArray stockLastPrices = new();
-
-                foreach (int price in stock.lastPrices)
-                    stockLastPrices.Add(price);
-
-                stockJson.Add("lastPrices", stockLastPrices);
-
-                #endregion
-
-                stocksJson.Add(stock.id, stockJson);
+                saveStocks.Add(new(stock.id, stock.price, stock.wentUp, stock.lastPrices.ToArray()));
             }
 
-            json.Add("stocks", stocksJson);
+            data.stocks = saveStocks.ToArray();
 
             #endregion
+
+            string jsonString = JsonConvert.SerializeObject(data, Formatting.Indented);
 
             try
             {
-                File.WriteAllText(botDataJsonPath, json.ToString());
+                File.WriteAllText(botDataJsonPath, jsonString);
             }
             catch (Exception e)
             {
@@ -128,117 +90,177 @@ namespace BancoBahiaBot
             }
         }
 
-        public static void Load()
+        public static void LoadAll()
         {
             if (!File.Exists(botDataJsonPath)) File.Create(botDataJsonPath);
-            string rawJson = File.ReadAllText(botDataJsonPath); if (rawJson.Trim() == string.Empty) { SaveAll(); rawJson = File.ReadAllText(botDataJsonPath); }
-            JSONObject json = (JSONObject)JSON.Parse(rawJson);
+            string json = File.ReadAllText(botDataJsonPath); if (json.Trim() == string.Empty) { SaveAll(); json = File.ReadAllText(botDataJsonPath); }
 
-            foreach (JSONObject user in json["users"])
-                LoadUserFromJson(user);
+            BotData data = JsonConvert.DeserializeObject<BotData>(json);
 
-            foreach (JSONObject stock in json["stocks"])
-                LoadStockFromJson(stock);
+            #region Load users
+
+            foreach (SaveUser saveUser in data.users)
+            {
+                try
+                {
+                    User user = UserHandler.CreateUser(ulong.Parse(saveUser.id));
+                    user.money = saveUser.money;
+                    user.lastDaily = saveUser.lastDaily;
+
+                    #region Load properties
+
+                    List<UserProperty> properties = new();
+                    foreach (SaveUser.SaveUserProperty property in saveUser.properties)
+                    {
+                        properties.Add(new(PropertyHandler.GetProperty(property.id), property.lastCollect));
+                    }
+
+                    user.properties = properties.ToArray();
+
+                    #endregion
+
+                    #region Load items
+
+                    List<UserItem> items = new();
+                    foreach (SaveUser.SaveUserItem item in saveUser.items)
+                    {
+                        items.Add(new(ItemHandler.GetItem(item.id), item.quantity));
+                    }
+
+                    user.items = items.ToArray();
+
+                    #endregion
+
+                    #region Load stocks
+
+                    List<UserStock> stocks = new();
+                    foreach (SaveUser.SaveUserStock stock in saveUser.stocks)
+                    {
+                        UserStock userStock = new(StockHandler.GetStock(stock.id), stock.quantity);
+
+                        userStock.highBuyPrice = stock.highBuyPrice;
+                        stocks.Add(userStock);
+                    }
+
+                    user.stocks = stocks.ToArray();
+
+                    #endregion
+                }
+                catch (Exception e)
+                {
+                    Terminal.WriteLine($"Error while loading user ({saveUser.id}): {e.Message}");
+                }
+            }
+
+            #endregion
+
+            #region Load stocks
+
+            foreach (SaveStock saveStock in data.stocks)
+            {
+                try
+                {
+                    Stock stock = StockHandler.GetStock(saveStock.id);
+
+                    stock.price = saveStock.price;
+                    stock.wentUp = saveStock.wentUp;
+                    stock.lastPrices = saveStock.lastPrices.ToList();
+                }
+                catch (Exception e)
+                {
+                    Terminal.WriteLine($"Error while loading stock ({saveStock.id}): {e.Message}");
+                }
+            }
+
+            #endregion
         }
 
-        static void LoadUserFromJson(JSONObject userJson)
+        #region Bot data classes
+
+        class BotData
         {
-            try
-            {
-                User newUser = UserHandler.CreateUser(userJson["id"]);
-
-                newUser.money = userJson["money"];
-                newUser.lastDaily = DateTime.Parse(userJson["lastDaily"]);
-
-                #region Load properties
-
-                List<UserProperty> properties = new();
-
-                foreach (JSONObject userPropertyJson in userJson["properties"])
-                {
-                    Property property = PropertyHandler.GetProperty(userPropertyJson["id"]);
-
-                    UserProperty userProperty = new(
-                            property,
-                            DateTime.Parse(userPropertyJson["lastCollect"])
-                        );
-
-                    properties.Add(userProperty);
-                }
-
-                newUser.properties = properties.ToArray();
-
-                #endregion
-
-                #region Load inventory
-
-                List<UserItem> inventory = new();
-
-                foreach (JSONObject userItemJson in userJson["inventory"])
-                {
-                    Item item = ItemHandler.GetItem(userItemJson["id"]);
-
-                    UserItem userItem = new
-                        (
-                            item,
-                            quantity: int.Parse(userItemJson["quantity"])
-                        );
-
-                    inventory.Add(userItem);
-                }
-
-                newUser.inventory = inventory.ToArray();
-
-                #endregion
-
-                #region Load stocks
-
-                List<UserStock> stocks = new();
-
-                foreach (JSONObject userStockJson in userJson["stocks"])
-                {
-                    Stock stock = StockHandler.GetStock(userStockJson["id"]);
-
-                    UserStock userStock = new
-                        (
-                            stock,
-                            quantity: userStockJson["quantity"]
-                        );
-                    userStock.highBuyPrice = userStockJson["highBuyPrice"];
-
-                    stocks.Add(userStock);
-                }
-
-                newUser.stocks = stocks.ToArray();
-
-                #endregion
-            }
-            catch (Exception e)
-            {
-                Terminal.WriteLine($"Error while loading user data: {e.Message} | User: {userJson["id"]}", Terminal.MessageType.ERROR);
-                return;
-            }
-
+            public SaveUser[] users;
+            public SaveStock[] stocks;
         }
 
-        static void LoadStockFromJson(JSONObject stockJson)
+        class SaveUser
         {
-            try
+            public SaveUser(string id, int money, DateTime lastDaily)
             {
-                Stock stock = StockHandler.GetStock(stockJson["id"]);
-
-                stock.price = stockJson["price"];
-                stock.wentUp = stockJson["wentUp"];
-
-                foreach (JSONNumber price in stockJson["lastPrices"])
-                    stock.lastPrices.Add(price);
+                this.id = id;
+                this.money = money;
+                this.lastDaily = lastDaily;
             }
-            catch (Exception e)
+
+            public string id;
+            public int money;
+            public DateTime lastDaily;
+
+            public SaveUserProperty[] properties;
+            public SaveUserItem[] items;
+            public SaveUserStock[] stocks;
+
+            public class SaveUserProperty
             {
-                Terminal.WriteLine($"Error while loading stock data: {e.Message} | Stock: {stockJson["id"]}", Terminal.MessageType.ERROR);
-                return;
+                public SaveUserProperty(string id, DateTime lastCollect)
+                {
+                    this.id = id;
+                    this.lastCollect = lastCollect;
+                }
+
+                public string id;
+                public DateTime lastCollect;
+            }
+
+            public class SaveUserItem
+            {
+                public SaveUserItem(string id, int quantity)
+                {
+                    this.id = id;
+                    this.quantity = quantity;
+                }
+
+                public string id;
+                public int quantity;
+            }
+
+            public class SaveUserStock
+            {
+                public SaveUserStock(string id, int quantity, int highBuyPrice)
+                {
+                    this.id = id;
+                    this.quantity = quantity;
+                    this.highBuyPrice = highBuyPrice;
+                }
+
+                public string id;
+                public int quantity;
+                public int highBuyPrice;
             }
         }
+
+        class SaveStock
+        {
+            public SaveStock(string id, int price, bool wentUp, int[] lastPrices)
+            {
+                this.id = id;
+                this.price = price;
+                this.wentUp = wentUp;
+                this.lastPrices = lastPrices;
+            }
+
+            public string id;
+            public int price;
+            public bool wentUp;
+            public int[] lastPrices;
+        }
+
+        class SaveGuild
+        {
+
+        }
+
+        #endregion
 
         #region Bot options
 

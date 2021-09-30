@@ -4,23 +4,23 @@ using System.Threading.Tasks;
 
 namespace BancoBahiaBot.Modules
 {
-    public class InventoryCommands : ModuleBase<SocketCommandContext>
+    public class ItemCommands : ModuleBase<SocketCommandContext>
     {
-        [Command("Inventory"), Alias("Inventario")]
-        public async Task InventoryCommand()
+        [Command("Items"), Alias("Itens")]
+        public async Task ItemsCommand()
         {
             User user = UserHandler.GetUser(Context.User.Id);
-            UserItem[] userInventory = user.inventory;
+            UserItem[] userItems = user.items;
             string items = string.Empty;
 
-            foreach (UserItem userItem in userInventory)
+            foreach (UserItem userItem in userItems)
             {
                 items += $"**`{userItem.item.name}`** : {userItem.quantity}\n";
             }
 
             EmbedBuilder embed = new EmbedBuilder
             {
-                Title = "**INVENTÁRIO**",
+                Title = "**ITENS**",
                 Color = Color.Orange
             }.WithAuthor(Context.User).WithCurrentTimestamp().WithFooter(footer => footer.Text = "Para ver mais sobre um item, use ?item <nome>");
 

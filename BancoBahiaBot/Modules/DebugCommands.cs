@@ -1,11 +1,11 @@
 ﻿using BancoBahiaBot.Utils;
-
 using Discord;
 using Discord.Audio;
 using Discord.Commands;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BancoBahiaBot.Modules
@@ -204,6 +204,21 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync("Tempo de coleta de propriedades resetados para o ADM :place_of_worship::place_of_worship::place_of_worship:!");
         }
 
+        [Command("UserMoneyRank")]
+        public async Task UserMoneyRankCommand()
+        {
+            string usersString = string.Empty;
+            User[] sortedUsers = UserHandler.GetUsers().OrderByDescending(x => x.money).ToArray();
+
+            foreach (User user in sortedUsers)
+            {
+                if(user.money != 0)
+                    usersString += $"{Bot.Client.GetUser(ulong.Parse(user.id))} : {user.money} \n";
+            }
+
+            await Context.Channel.SendMessageAsync(usersString);
+        }
+
         [Command("Api")]
         public async Task ApiCommand(string msg)
         {
@@ -241,7 +256,6 @@ namespace BancoBahiaBot.Modules
         [Command("audio")]
         public async Task JoinChannel(IVoiceChannel channel = null)
         {
-            await Context.Channel.SendMessageAsync("Comando desabilitado");
             return;
 
             // Get the audio channel

@@ -37,6 +37,7 @@ namespace BancoBahiaBot
                 if (context.User.IsBot || context.IsPrivate) return null;
 
                 UserHandler.CreateUser(context.User.Id);
+                GuildHandler.CreateGuild(context.Guild.Id);
                 
                 Thread thread = new(async () =>
                 {

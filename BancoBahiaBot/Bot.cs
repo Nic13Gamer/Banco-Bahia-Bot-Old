@@ -15,7 +15,7 @@ namespace BancoBahiaBot
 
         public static readonly string API_KEY = botOptions.apiKey;
 
-        DiscordSocketClient client;
+        public static DiscordSocketClient Client { get; private set; }
 
         CommandHandler commandHandler;
 
@@ -23,24 +23,24 @@ namespace BancoBahiaBot
         {
             Console.Title = "Bot Banco Bahia";
             
-            client = new DiscordSocketClient();
+            Client = new DiscordSocketClient();
 
-            await client.LoginAsync(TokenType.Bot, botOptions.token);
-            await client.StartAsync();
+            await Client.LoginAsync(TokenType.Bot, botOptions.token);
+            await Client.StartAsync();
 
-            commandHandler = new CommandHandler(client, botOptions.prefix);
+            commandHandler = new CommandHandler(Client, botOptions.prefix);
 
             ItemHandler.Start();
             PropertyHandler.Start();
             StockHandler.Start();
 
-            SaveManager.Load();
+            SaveManager.LoadAll();
 
-            ReactionHandler.Start(client);
+            ReactionHandler.Start();
 
             Terminal.WriteLine("Bot started successfully!", Terminal.MessageType.INFO);
 
-            await client.SetGameAsync("Sou um banco que tem seu próprio dinheiro virtual e muito mais!");
+            await Client.SetGameAsync("Sou um banco que tem seu próprio dinheiro virtual e muito mais!");
 
             await Task.Delay(-1);
         }

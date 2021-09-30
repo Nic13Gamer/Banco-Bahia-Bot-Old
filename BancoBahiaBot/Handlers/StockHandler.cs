@@ -13,7 +13,7 @@ namespace BancoBahiaBot
 
         static Thread stocksUpdaterThread;
 
-        public static readonly List<Stock> stocks = new();
+        static readonly List<Stock> stocks = new();
 
         #region Define stocks
 
@@ -149,6 +149,8 @@ namespace BancoBahiaBot
             }
         }
 
+        public static Stock[] GetStocks() => stocks.ToArray();
+
         public static Stock GetStock(string stock)
         {
             stock = StringUtils.RemoveAccents(stock.ToLower());
@@ -252,7 +254,7 @@ namespace BancoBahiaBot
         //public int stocksUpdatePayback;
         public bool wentUp = true;
 
-        public readonly List<int> lastPrices = new();
+        public List<int> lastPrices = new();
     }
 
     class UserStock

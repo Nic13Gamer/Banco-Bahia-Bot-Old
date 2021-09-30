@@ -20,7 +20,7 @@ namespace BancoBahiaBot
                     money: 0,
                     lastDaily: DateTime.Now.AddDays(-1),
                     properties: Array.Empty<UserProperty>(),
-                    inventory: Array.Empty<UserItem>(),
+                    items: Array.Empty<UserItem>(),
                     stocks: Array.Empty<UserStock>()
                 );
 
@@ -33,13 +33,13 @@ namespace BancoBahiaBot
 
     class User
     {
-        public User(string id, int money, DateTime lastDaily, UserProperty[] properties, UserItem[] inventory, UserStock[] stocks)
+        public User(string id, int money, DateTime lastDaily, UserProperty[] properties, UserItem[] items, UserStock[] stocks)
         {
             this.id = id;
             this.money = money;
             this.lastDaily = lastDaily;
             this.properties = properties;
-            this.inventory = inventory;
+            this.items = items;
             this.stocks = stocks;
         }
 
@@ -48,7 +48,7 @@ namespace BancoBahiaBot
         public DateTime lastDaily;
 
         public UserProperty[] properties;
-        public UserItem[] inventory;
+        public UserItem[] items;
         public UserStock[] stocks;
     }
 }
