@@ -20,6 +20,7 @@ namespace BancoBahiaBot
             Guild guild = new
                 (
                     id: id.ToString(),
+                    prefix: Bot.BotOptions.prefix,
                     discordGuild: discordGuild
                 );
 
@@ -32,13 +33,15 @@ namespace BancoBahiaBot
 
     class Guild
     {
-        public Guild(string id, SocketGuild discordGuild)
+        public Guild(string id, string prefix, SocketGuild discordGuild)
         {
             this.id = id;
+            this.prefix = prefix;
             this.discordGuild = discordGuild;
         }
 
         public string id;
+        public string prefix;
         public SocketGuild discordGuild;
     }
 }

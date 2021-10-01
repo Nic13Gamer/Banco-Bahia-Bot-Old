@@ -13,10 +13,10 @@ namespace BancoBahiaBot
 
         readonly string prefix;
 
-        public CommandHandler(DiscordSocketClient _client, string _prefix)
+        public CommandHandler()
         {
-            prefix = _prefix;
-            client = _client;
+            prefix = Bot.BotOptions.prefix;
+            client = Bot.Client;
             service = new CommandService();
 
             service.AddModulesAsync(Assembly.GetEntryAssembly(), null);
