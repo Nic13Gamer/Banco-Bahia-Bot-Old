@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using System.Reflection;
 using System.Threading;
@@ -11,11 +12,8 @@ namespace BancoBahiaBot
         readonly DiscordSocketClient client;
         readonly CommandService service;
 
-        readonly string prefix;
-
         public CommandHandler()
         {
-            prefix = Bot.BotOptions.prefix;
             client = Bot.Client;
             service = new CommandService();
 
@@ -30,14 +28,13 @@ namespace BancoBahiaBot
             if (msg == null) return null;
 
             var context = new SocketCommandContext(client, msg);
+            Guild guild = GuildHandler.CreateGuild(context.Guild.Id);
 
             int argPos = 0;
-            if (msg.HasStringPrefix(prefix, ref argPos))
+            if (msg.HasStringPrefix(guild.prefix, ref argPos))
             {
                 if (context.User.IsBot || context.IsPrivate) return null;
-
                 UserHandler.CreateUser(context.User.Id);
-                GuildHandler.CreateGuild(context.Guild.Id);
                 
                 Thread thread = new(async () =>
                 {
@@ -45,14 +42,14 @@ namespace BancoBahiaBot
 
                     if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                     {
-                        string reply = "Alguma coisa deu errado! Motivo: " + result.ErrorReason;
+                        string reply = $"{context.User.Mention}, alguma coisa deu errado! Motivo: " + result.ErrorReason;
 
-                        if (result.Error == CommandError.BadArgCount)
-                            reply = context.Message + " tem poucos ou muitos argumentos!";
+                        Embed commandHelp = HelpHandler.GetCommandHelpEmbed(context.Message.Content.Split(" ")[0].Replace(guild.prefix, "").Trim());
+                        if (commandHelp != null) reply = context.User.Mention;
 
                         Terminal.WriteLine($"Bot use error [{result.ErrorReason}] by {context.User} ({context.User.Id})", Terminal.MessageType.WARN);
 
-                        await context.Channel.SendMessageAsync(reply);
+                        await context.Channel.SendMessageAsync(reply, embed: commandHelp);
                     }
 
                     SaveManager.SaveAll();

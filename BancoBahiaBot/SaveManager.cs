@@ -78,6 +78,19 @@ namespace BancoBahiaBot
 
             #endregion
 
+            #region Save guilds
+
+            List<SaveGuild> saveGuilds = new();
+
+            foreach (Guild guild in GuildHandler.GetGuilds())
+            {
+                saveGuilds.Add(new(guild.id, guild.prefix));
+            }
+
+            data.guilds = saveGuilds.ToArray();
+
+            #endregion
+
             string jsonString = JsonConvert.SerializeObject(data, Formatting.Indented);
 
             try
@@ -104,6 +117,7 @@ namespace BancoBahiaBot
                 try
                 {
                     User user = UserHandler.CreateUser(ulong.Parse(saveUser.id));
+
                     user.money = saveUser.money;
                     user.lastDaily = saveUser.lastDaily;
 
@@ -173,6 +187,24 @@ namespace BancoBahiaBot
             }
 
             #endregion
+
+            #region Load guilds
+
+            foreach (SaveGuild saveGuild in data.guilds)
+            {
+                try
+                {
+                    Guild guild = GuildHandler.CreateGuild(ulong.Parse(saveGuild.id));
+
+                    guild.prefix = saveGuild.prefix;
+                }
+                catch (Exception e)
+                {
+                    Terminal.WriteLine($"Error while loading guild ({saveGuild.id}): {e.Message}");
+                }
+            }
+
+            #endregion
         }
 
         #region Bot data classes
@@ -181,6 +213,7 @@ namespace BancoBahiaBot
         {
             public SaveUser[] users;
             public SaveStock[] stocks;
+            public SaveGuild[] guilds;
         }
 
         class SaveUser
@@ -257,7 +290,14 @@ namespace BancoBahiaBot
 
         class SaveGuild
         {
+            public SaveGuild(string id, string prefix)
+            {
+                this.id = id;
+                this.prefix = prefix;
+            }
 
+            public string id;
+            public string prefix;
         }
 
         #endregion

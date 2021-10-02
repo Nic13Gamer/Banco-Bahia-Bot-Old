@@ -12,7 +12,7 @@ namespace BancoBahiaBot
         public static Guild CreateGuild(ulong id)
         {
             SocketGuild discordGuild = Bot.Client.GetGuild(id);
-            if (discordGuild == null) throw new System.Exception("Guild in discord does not exist!");
+            if (discordGuild == null) throw new System.Exception("Guild in Discord does not exist!");
 
             foreach (Guild _guild in guilds)
                 if (_guild.id == id.ToString()) return _guild;

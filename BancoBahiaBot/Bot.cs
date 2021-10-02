@@ -28,11 +28,14 @@ namespace BancoBahiaBot
             await Client.LoginAsync(TokenType.Bot, BotOptions.token);
             await Client.StartAsync();
 
+            await Task.Delay(1500);
+
             commandHandler = new();
 
             ItemHandler.Start();
             PropertyHandler.Start();
             StockHandler.Start();
+            HelpHandler.Start();
 
             SaveManager.LoadAll();
 

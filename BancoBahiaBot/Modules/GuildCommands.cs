@@ -1,16 +1,18 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using System.Threading.Tasks;
 
 namespace BancoBahiaBot.Modules
 {
     public class GuildCommands : ModuleBase<SocketCommandContext>
     {
-        [Command("Guild")]
-        public async Task GuildCommand()
+        [Command("Prefix"), Alias("Prefixo"), RequireUserPermission(GuildPermission.ManageGuild)]
+        public async Task PrefixCommand(string prefix)
         {
             Guild guild = GuildHandler.GetGuild(Context.Guild.Id);
 
-            await Context.Channel.SendMessageAsync($"{guild.discordGuild.Name} ({guild.id})");
+            guild.prefix = prefix;
+            await Context.Channel.SendMessageAsync($"O prefixo de {guild.discordGuild.Name} foi alterado para {guild.prefix}");
         }
     }
 }
