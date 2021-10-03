@@ -231,7 +231,7 @@ namespace BancoBahiaBot.Modules
         }
 
         [Command("Properties"), Alias("Propriedades")]
-        public async Task PropertiesCommand(IUser mention)
+        public async Task PropertiesCommand(IGuildUser mention)
         {
             if (mention.IsBot) return;
 
@@ -319,13 +319,13 @@ namespace BancoBahiaBot.Modules
 
         struct SellPropertyRequest
         {
-            public SellPropertyRequest(IUser user, UserProperty property)
+            public SellPropertyRequest(IGuildUser user, UserProperty property)
             {
                 this.user = user;
                 this.property = property;
             }
 
-            public IUser user;
+            public IGuildUser user;
             public UserProperty property;
         }
     }

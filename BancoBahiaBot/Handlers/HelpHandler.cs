@@ -112,7 +112,7 @@ namespace BancoBahiaBot
         /// <param name="alias">Alias of command.</param>
         /// <param name="uses">Use of the command. No need to put a prefix in the start of string, it is automatic.
         /// If you need the prefix again, just insert {prefix} .
-        /// Use || to separate lines.</param>
+        /// Use || to separate uses/lines.</param>
         /// <param name="description">Description of the command.</param>
         /// <param name="permissions">Permissions needed to run the command.</param>
         public CommandHelpAttribute(string name, string alias, string uses, string description, GuildPermission[] permissions = null) =>

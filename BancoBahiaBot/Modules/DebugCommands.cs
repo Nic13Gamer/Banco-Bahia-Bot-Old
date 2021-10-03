@@ -165,7 +165,7 @@ namespace BancoBahiaBot.Modules
 
         // DEBUG (JUST FOR NIC :) )
         [Command("AddMoney"), Alias("AdicionarDinheiro")]
-        public async Task AddMoneyCommand(IUser mention, string quantity)
+        public async Task AddMoneyCommand(IGuildUser mention, string quantity)
         {
             if (Context.User.Id != 345680337277288448) return;
 
@@ -217,25 +217,6 @@ namespace BancoBahiaBot.Modules
             }
 
             await Context.Channel.SendMessageAsync(usersString);
-        }
-
-        [Command("Api")]
-        public async Task ApiCommand(string msg)
-        {
-            var content = new Dictionary<string, string>
-            {
-                { "msg", Context.User.GetAvatarUrl() }
-            };
-
-            HttpResponse response = await NetUtils.ApiRequest(Bot.WEBSITE_API + $"/{msg}", content);
-
-            if(response.status != 200)
-            {
-                await Context.Channel.SendMessageAsync(response.content + $" | Por: {Context.User.Mention}");
-                return;
-            }
-
-            await Context.Channel.SendFileAsync(response.content, "Por: " + Context.User.Mention);
         }
 
         [Command("reac")]

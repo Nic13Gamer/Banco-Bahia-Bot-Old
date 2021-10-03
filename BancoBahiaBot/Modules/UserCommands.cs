@@ -25,19 +25,16 @@ namespace BancoBahiaBot.Modules
                 { "money", UserHandler.GetUser(Context.User.Id).money.ToString() }
             };
 
-            HttpResponse response = await NetUtils.ApiRequest(Bot.WEBSITE_API + $"/profile", content);
+            HttpResponse response = await NetUtils.BotApiRequest("profile", content);
 
             if(response.status != 200)
-            {
-                await Context.Channel.SendMessageAsync(response.content + $" | Por: {Context.User.Mention}");
                 return;
-            }
 
-            await Context.Channel.SendFileAsync(response.content, "Por: " + Context.User.Mention);
+            await Context.Channel.SendFileAsync(response.content, $"Perfil de {Context.User.Mention}");
         }
 
         [Command("Profile"), Alias("Perfil")]
-        public async Task ProfileCommand(IUser mention)
+        public async Task ProfileCommand(IGuildUser mention)
         {
             if (mention.IsBot) return;
 
@@ -48,15 +45,12 @@ namespace BancoBahiaBot.Modules
                 { "money", UserHandler.GetUser(mention.Id).money.ToString() }
             };
 
-            HttpResponse response = await NetUtils.ApiRequest(Bot.WEBSITE_API + $"/profile", content);
+            HttpResponse response = await NetUtils.BotApiRequest("profile", content);
 
             if (response.status != 200)
-            {
-                await Context.Channel.SendMessageAsync(response.content + $" | Por: {Context.User.Mention}");
                 return;
-            }
 
-            await Context.Channel.SendFileAsync(response.content, "Por: " + Context.User.Mention);
+            await Context.Channel.SendFileAsync(response.content, $"Perfil de {mention.Mention}");
         }
     }
 }

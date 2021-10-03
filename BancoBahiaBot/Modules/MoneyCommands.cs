@@ -25,7 +25,7 @@ namespace BancoBahiaBot.Modules
         }
 
         [Command("Atm"), Alias("Money")]
-        public async Task AtmCommand(IUser mention)
+        public async Task AtmCommand(IGuildUser mention)
         {
             if (mention.IsBot) return;
 
@@ -42,7 +42,7 @@ namespace BancoBahiaBot.Modules
                 uses: "pay <usuário> <quantidade>",
                 description: "Transfira a quantidade escolhida de dinheiro para outro usuário"
             )]
-        public async Task PayCommand(IUser mention, string quantity)
+        public async Task PayCommand(IGuildUser mention, string quantity)
         {
             if (mention.IsBot || mention == Context.User) return;
 
@@ -89,7 +89,7 @@ namespace BancoBahiaBot.Modules
                 uses: "steal <usuário>",
                 description: "Tente roubar dinheiro de outro usuário, mas tome cuidado com a polícia :oncoming_police_car:"
             )]
-        public async Task StealCommand(IUser mention)
+        public async Task StealCommand(IGuildUser mention)
         {
             if (mention.IsBot || mention == Context.User) return;
 
@@ -168,8 +168,8 @@ namespace BancoBahiaBot.Modules
 
             }
 
-            public IUser from;
-            public IUser to;
+            public IGuildUser from;
+            public IGuildUser to;
             public int money;
 
             public bool fromAccepted;

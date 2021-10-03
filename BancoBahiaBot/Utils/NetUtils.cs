@@ -8,12 +8,13 @@ namespace BancoBahiaBot.Utils
     {
         public static readonly HttpClient httpClient = new();
 
-        public static async Task<HttpResponse> ApiRequest(string url, Dictionary<string, string> content)
+        public static async Task<HttpResponse> BotApiRequest(string module, Dictionary<string, string> content)
         {
             var encodedContent = new FormUrlEncodedContent(content);
+
             encodedContent.Headers.Add("key", Bot.API_KEY);
 
-            var httpResponse = await httpClient.PostAsync(url, encodedContent);
+            var httpResponse = await httpClient.PostAsync($"{Bot.WEBSITE_API}/{module}", encodedContent);
 
             HttpResponse response = new((int)httpResponse.StatusCode, await httpResponse.Content.ReadAsStringAsync());
 
