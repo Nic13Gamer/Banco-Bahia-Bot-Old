@@ -10,6 +10,12 @@ namespace BancoBahiaBot.Modules
     public class UserCommands : ModuleBase<SocketCommandContext>
     {
         [Command("Profile"), Alias("Perfil")]
+        [CommandHelp(
+                name: "profile",
+                alias: "perfil",
+                uses: "profile||{prefix}profile <usuário>",
+                description: "Mostra o seu perfil ou o de outro usuário"
+            )]
         public async Task ProfileCommand()
         {
             var content = new Dictionary<string, string>

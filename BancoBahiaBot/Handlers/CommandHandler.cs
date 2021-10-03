@@ -25,12 +25,11 @@ namespace BancoBahiaBot
 
         Task HandleCommand(SocketMessage s)
         {
-            var msg = s as SocketUserMessage;
-            if (msg == null) return null;
+            if (s is not SocketUserMessage msg) return null;
 
             var context = new SocketCommandContext(client, msg);
             Guild guild = GuildHandler.CreateGuild(context.Guild.Id);
-
+            
             int argPos = 0;
             if (msg.HasStringPrefix(guild.prefix, ref argPos))
             {
@@ -41,7 +40,7 @@ namespace BancoBahiaBot
                 {
                     IDisposable typingState = null;
 
-                    if(service.Search(context, argPos).Commands != null)
+                    if (service.Search(context, argPos).Commands != null)
                         typingState = context.Channel.EnterTypingState();
 
                     var result = await service.ExecuteAsync(context, argPos, null);
@@ -58,7 +57,7 @@ namespace BancoBahiaBot
                         await context.Channel.SendMessageAsync(reply, embed: commandHelp);
                     }
 
-                    if(typingState != null)
+                    if (typingState != null)
                         typingState.Dispose();
 
                     SaveManager.SaveAll();

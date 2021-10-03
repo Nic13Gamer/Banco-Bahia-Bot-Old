@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using System.Collections;
 using System.Threading.Tasks;
 
 namespace BancoBahiaBot.Modules
@@ -11,8 +10,8 @@ namespace BancoBahiaBot.Modules
         [CommandHelp(
                 name: "prefix",
                 alias: "prefixo",
-                use: "prefix <novo prefixo>",
-                description: "Muda o prefixo de comandos do servidor",
+                uses: "prefix <novo prefixo>",
+                description: "Mude o prefixo de comandos do servidor",
                 permissions: new[] { GuildPermission.ManageGuild }
             )]
         public async Task PrefixCommand(string prefix)

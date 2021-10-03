@@ -10,6 +10,12 @@ namespace BancoBahiaBot.Modules
         readonly Random random = new();
 
         [Command("Atm"), Alias("Money")]
+        [CommandHelp(
+                name: "atm",
+                alias: "money",
+                uses: "atm||{prefix}atm <usuário>",
+                description: "Mostra o seu dinheiro ou o de outro usuário"
+            )]
         public async Task AtmCommand()
         {
             User user = UserHandler.GetUser(Context.User.Id);
@@ -29,8 +35,14 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync(reply);
         }
 
-        [Command("Transfer"), Alias("Pay")]
-        public async Task TransferCommand(IUser mention, string quantity)
+        [Command("Pay"), Alias("Pagar")]
+        [CommandHelp(
+                name: "pay",
+                alias: "pagar",
+                uses: "pay <usuário> <quantidade>",
+                description: "Transfira a quantidade escolhida de dinheiro para outro usuário"
+            )]
+        public async Task PayCommand(IUser mention, string quantity)
         {
             if (mention.IsBot || mention == Context.User) return;
 
@@ -69,7 +81,14 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync(reply);
         }
 
+
         [Command("Steal"), Alias("Roubar")]
+        [CommandHelp(
+                name: "steal",
+                alias: "roubar",
+                uses: "steal <usuário>",
+                description: "Tente roubar dinheiro de outro usuário, mas tome cuidado com a polícia :oncoming_police_car:"
+            )]
         public async Task StealCommand(IUser mention)
         {
             if (mention.IsBot || mention == Context.User) return;
@@ -111,6 +130,12 @@ namespace BancoBahiaBot.Modules
         }
 
         [Command("Daily")]
+        [CommandHelp(
+                name: "daily",
+                alias: "",
+                uses: "daily",
+                description: "Colete seu dinheiro diário"
+            )]
         public async Task DailyCommand()
         {
             User user = UserHandler.GetUser(Context.User.Id);
