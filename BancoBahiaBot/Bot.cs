@@ -35,7 +35,6 @@ namespace BancoBahiaBot
             ItemHandler.Start();
             PropertyHandler.Start();
             StockHandler.Start();
-            HelpHandler.Start();
 
             SaveManager.LoadAll();
 

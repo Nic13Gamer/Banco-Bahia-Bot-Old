@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,22 +36,30 @@ namespace BancoBahiaBot
             {
                 if (context.User.IsBot || context.IsPrivate) return null;
                 UserHandler.CreateUser(context.User.Id);
-                
+
                 Thread thread = new(async () =>
                 {
+                    IDisposable typingState = null;
+
+                    if(service.Search(context, argPos).Commands != null)
+                        typingState = context.Channel.EnterTypingState();
+
                     var result = await service.ExecuteAsync(context, argPos, null);
 
                     if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
                     {
                         string reply = $"{context.User.Mention}, alguma coisa deu errado! Motivo: " + result.ErrorReason;
 
-                        Embed commandHelp = HelpHandler.GetCommandHelpEmbed(context.Message.Content.Split(" ")[0].Replace(guild.prefix, "").Trim());
+                        Embed commandHelp = HelpHandler.GetCommandHelpEmbed(service.Search(context, argPos).Commands[0].Command.Name, guild);
                         if (commandHelp != null) reply = context.User.Mention;
 
                         Terminal.WriteLine($"Bot use error [{result.ErrorReason}] by {context.User} ({context.User.Id})", Terminal.MessageType.WARN);
 
                         await context.Channel.SendMessageAsync(reply, embed: commandHelp);
                     }
+
+                    if(typingState != null)
+                        typingState.Dispose();
 
                     SaveManager.SaveAll();
                 });

@@ -1,29 +1,12 @@
-﻿using Discord;
+﻿using System;
+using Discord;
 using System.Collections.Generic;
 
 namespace BancoBahiaBot
 {
     class HelpHandler
     {
-        #region Command help instances
-
-        static readonly CommandHelp prefixCommandHelp = new
-                (
-                    name: "prefix",
-                    alias: "prefixo",
-                    use: "prefix <novo prefixo>",
-                    description: "Muda o prefixo de comandos do servidor",
-                    permissions: new[] { GuildPermission.ManageGuild }
-                );
-
-        #endregion
-
         static readonly List<CommandHelp> commandHelps = new();
-
-        public static void Start()
-        {
-            AddCommandHelp(prefixCommandHelp);
-        }
 
         public static void AddCommandHelp(CommandHelp commandHelp)
         {
@@ -36,7 +19,7 @@ namespace BancoBahiaBot
             commandHelps.Add(commandHelp);
         }
 
-        public static Embed GetCommandHelpEmbed(string name)
+        public static Embed GetCommandHelpEmbed(string name, Guild guild)
         {
             CommandHelp commandHelp = GetCommandHelp(name);
             if (commandHelp == null) return null;
@@ -48,7 +31,7 @@ namespace BancoBahiaBot
             }.WithCurrentTimestamp().WithFooter(footer => footer.Text = $"Ajuda do comando {commandHelp.name}");
 
             embed.AddField("> Uso do comando",
-                    $"`{commandHelp.use}`");
+                    $"`{guild.prefix}{commandHelp.use}`");
 
             embed.AddField("> Descrição",
                     commandHelp.description);
@@ -95,5 +78,20 @@ namespace BancoBahiaBot
         public string use;
         public string description;
         public GuildPermission[] permissions;
+    }
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    class CommandHelpAttribute : Attribute
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="alias"></param>
+        /// <param name="use">No need to put a prefix in the start of string, it is automatic</param>
+        /// <param name="description"></param>
+        /// <param name="permissions"></param>
+        public CommandHelpAttribute(string name, string alias, string use, string description, GuildPermission[] permissions) =>
+            HelpHandler.AddCommandHelp(new(name, alias, use, description, permissions));
     }
 }
