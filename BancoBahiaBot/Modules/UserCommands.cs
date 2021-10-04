@@ -12,7 +12,6 @@ namespace BancoBahiaBot.Modules
         [Command("Profile"), Alias("Perfil")]
         [CommandHelp(
                 name: "profile",
-                alias: "perfil",
                 uses: "profile||{prefix}profile <usuário>",
                 description: "Mostra o seu perfil ou o de outro usuário"
             )]
@@ -20,7 +19,7 @@ namespace BancoBahiaBot.Modules
         {
             var content = new Dictionary<string, string>
             {
-                { "profilePic", Context.User.GetAvatarUrl() },
+                { "profilePic", Context.User.GetAvatarUrl(size: 512) },
                 { "username", Context.User.Username },
                 { "money", UserHandler.GetUser(Context.User.Id).money.ToString() }
             };
@@ -40,7 +39,7 @@ namespace BancoBahiaBot.Modules
 
             var content = new Dictionary<string, string>
             {
-                { "profilePic", mention.GetAvatarUrl() },
+                { "profilePic", mention.GetAvatarUrl(size: 512) },
                 { "username", mention.Username },
                 { "money", UserHandler.GetUser(mention.Id).money.ToString() }
             };

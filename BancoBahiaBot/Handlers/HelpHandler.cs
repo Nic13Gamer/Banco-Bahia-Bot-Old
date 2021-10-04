@@ -12,7 +12,7 @@ namespace BancoBahiaBot
         {
             foreach (CommandHelp command in commandHelps)
             {
-                if (commandHelp.name.ToLower() == command.name.ToLower() || commandHelp.alias.ToLower() == command.alias.ToLower())
+                if (commandHelp.name.ToLower() == command.name.ToLower())
                     return;
             }
 
@@ -71,7 +71,7 @@ namespace BancoBahiaBot
         {
             foreach (CommandHelp command in commandHelps)
             {
-                if (name.ToLower() == command.name.ToLower() || name.ToLower() == command.alias.ToLower())
+                if (name.ToLower() == command.name.ToLower())
                     return command;
             }
 
@@ -81,17 +81,17 @@ namespace BancoBahiaBot
 
     class CommandHelp
     {
-        public CommandHelp(string name, string alias, string uses, string description, GuildPermission[] permissions)
+        public CommandHelp(string name, string[] aliases, string uses, string description, GuildPermission[] permissions)
         {
             this.name = name;
-            this.alias = alias;
+            this.aliases = aliases;
             this.uses = uses;
             this.description = description;
             this.permissions = permissions;
         }
 
         public string name;
-        public string alias;
+        public string[] aliases;
         public string uses;
         public string description;
         public GuildPermission[] permissions;
@@ -109,13 +109,17 @@ namespace BancoBahiaBot
         /// If you have more than one method for a command add this attribute just once.
         /// </summary>
         /// <param name="name">Name of command.</param>
-        /// <param name="alias">Alias of command.</param>
         /// <param name="uses">Use of the command. No need to put a prefix in the start of string, it is automatic.
         /// If you need the prefix again, just insert {prefix} .
         /// Use || to separate uses/lines.</param>
         /// <param name="description">Description of the command.</param>
         /// <param name="permissions">Permissions needed to run the command.</param>
-        public CommandHelpAttribute(string name, string alias, string uses, string description, GuildPermission[] permissions = null) =>
-            HelpHandler.AddCommandHelp(new(name, alias, uses, description, permissions));
+        public CommandHelpAttribute(string name, string uses, string description, GuildPermission[] permissions = null)
+        {
+            //TODO: get aliases from command
+
+            HelpHandler.AddCommandHelp(new(name, Array.Empty<string>(), uses, description, permissions));
+        }
+            
     }
 }

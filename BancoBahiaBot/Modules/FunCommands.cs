@@ -11,7 +11,6 @@ namespace BancoBahiaBot.Modules
         [Command("Yes"), Alias("Sim")]
         [CommandHelp(
                 name: "yes",
-                alias: "sim",
                 uses: "yes",
                 description: "Mande algum gif de sim, até aqueles mais estranhos"
             )]
