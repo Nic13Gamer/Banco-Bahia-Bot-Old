@@ -89,6 +89,14 @@ namespace BancoBahiaBot
                 price: 420
             );
 
+        public static Stock brucesInc = new
+            (
+                id: "brucesInc",
+                name: "Bruces Inc",
+                shortName: "BRCI",
+                price: 210
+            );
+
         #endregion
 
         public static void Start()
@@ -102,6 +110,7 @@ namespace BancoBahiaBot
             stocks.Add(joteiElectronicsInc);
             stocks.Add(monoWavesLtda);
             stocks.Add(brocolisCompany);
+            stocks.Add(brucesInc);
 
             stocksUpdaterThread = new(StocksUpdater);
             stocksUpdaterThread.Start();

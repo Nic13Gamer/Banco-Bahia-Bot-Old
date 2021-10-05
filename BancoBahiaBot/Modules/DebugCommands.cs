@@ -246,7 +246,7 @@ namespace BancoBahiaBot.Modules
             // For the next step with transmitting audio, you would want to pass this Audio Client in to a service.
             var audioClient = await channel.ConnectAsync();
             
-            await SendAsync(audioClient, "Sounds/sus.mp3");
+            await SendAsync(audioClient, "Sounds/capitao.mp3");
         }
 
         private Process CreateStream(string path)
