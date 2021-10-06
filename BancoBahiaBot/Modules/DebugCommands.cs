@@ -234,10 +234,10 @@ namespace BancoBahiaBot.Modules
 
         #region audio
 
-        [Command("audio")]
+        [Command("audio"), DoNotEnterTypingState()]
         public async Task JoinChannel(IVoiceChannel channel = null)
         {
-            return;
+            if(Context.User.Id != 345680337277288448) return;
 
             // Get the audio channel
             channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;

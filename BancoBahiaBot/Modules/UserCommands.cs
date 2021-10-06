@@ -12,6 +12,7 @@ namespace BancoBahiaBot.Modules
         [Command("Profile"), Alias("Perfil")]
         [CommandHelp(
                 name: "profile",
+                aliases: "perfil",
                 uses: "profile||{prefix}profile <usuário>",
                 description: "Mostra o seu perfil ou o de outro usuário"
             )]

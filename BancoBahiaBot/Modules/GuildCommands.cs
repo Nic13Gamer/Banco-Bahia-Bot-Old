@@ -9,6 +9,7 @@ namespace BancoBahiaBot.Modules
         [Command("Prefix"), Alias("Prefixo"), RequireUserPermission(GuildPermission.ManageGuild)]
         [CommandHelp(
                 name: "prefix",
+                aliases: "prefixo",
                 uses: "prefix <novo prefixo>",
                 description: "Mude o prefixo de comandos do servidor",
                 permissions: new[] { GuildPermission.ManageGuild }

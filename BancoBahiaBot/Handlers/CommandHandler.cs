@@ -38,9 +38,20 @@ namespace BancoBahiaBot
 
                 Thread thread = new(async () =>
                 {
+                    if (service.Search(context, argPos).Commands == null) return;
+
+                    CommandInfo commandInfo = service.Search(context, argPos).Commands[0].Command;
+
+                    bool enterTypingState = true;
                     IDisposable typingState = null;
 
-                    if (service.Search(context, argPos).Commands != null)
+                    foreach (var attribute in commandInfo.Attributes)
+                    {
+                        if (attribute.GetType() == typeof(DoNotEnterTypingStateAttribute))
+                            enterTypingState = false;
+                    }
+
+                    if (enterTypingState)
                         typingState = context.Channel.EnterTypingState();
 
                     var result = await service.ExecuteAsync(context, argPos, null);
@@ -49,7 +60,7 @@ namespace BancoBahiaBot
                     {
                         string reply = $"{context.User.Mention}, alguma coisa deu errado! Motivo: " + result.ErrorReason;
 
-                        Embed commandHelp = HelpHandler.GetCommandHelpEmbed(service.Search(context, argPos).Commands[0].Command.Name, guild);
+                        Embed commandHelp = HelpHandler.GetCommandHelpEmbed(commandInfo.Name, guild);
                         if (commandHelp != null) reply = context.User.Mention;
 
                         Terminal.WriteLine($"Bot use error [{result.ErrorReason}] by {context.User} ({context.User.Id})", Terminal.MessageType.WARN);
@@ -67,5 +78,10 @@ namespace BancoBahiaBot
 
             return null;
         }
+    }
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    class DoNotEnterTypingStateAttribute : Attribute
+    {
     }
 }

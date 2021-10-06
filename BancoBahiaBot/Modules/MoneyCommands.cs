@@ -12,6 +12,7 @@ namespace BancoBahiaBot.Modules
         [Command("Atm"), Alias("Money")]
         [CommandHelp(
                 name: "atm",
+                aliases: "money",
                 uses: "atm||{prefix}atm <usuário>",
                 description: "Mostra o seu dinheiro ou o de outro usuário"
             )]
@@ -37,6 +38,7 @@ namespace BancoBahiaBot.Modules
         [Command("Pay"), Alias("Pagar")]
         [CommandHelp(
                 name: "pay",
+                aliases: "pagar",
                 uses: "pay <usuário> <quantidade>",
                 description: "Transfira a quantidade escolhida de dinheiro para outro usuário"
             )]
@@ -83,6 +85,7 @@ namespace BancoBahiaBot.Modules
         [Command("Steal"), Alias("Roubar")]
         [CommandHelp(
                 name: "steal",
+                aliases: "roubar",
                 uses: "steal <usuário>",
                 description: "Tente roubar dinheiro de outro usuário, mas tome cuidado com a polícia :oncoming_police_car:"
             )]
@@ -129,6 +132,7 @@ namespace BancoBahiaBot.Modules
         [Command("Daily")]
         [CommandHelp(
                 name: "daily",
+                aliases: "",
                 uses: "daily",
                 description: "Colete seu dinheiro diário"
             )]

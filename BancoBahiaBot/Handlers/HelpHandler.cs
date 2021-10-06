@@ -109,16 +109,15 @@ namespace BancoBahiaBot
         /// If you have more than one method for a command add this attribute just once.
         /// </summary>
         /// <param name="name">Name of command.</param>
+        /// <param name="aliases">Use | to separate aliases.</param>
         /// <param name="uses">Use of the command. No need to put a prefix in the start of string, it is automatic.
         /// If you need the prefix again, just insert {prefix} .
         /// Use || to separate uses/lines.</param>
         /// <param name="description">Description of the command.</param>
         /// <param name="permissions">Permissions needed to run the command.</param>
-        public CommandHelpAttribute(string name, string uses, string description, GuildPermission[] permissions = null)
+        public CommandHelpAttribute(string name, string aliases, string uses, string description, GuildPermission[] permissions = null)
         {
-            //TODO: get aliases from command
-
-            HelpHandler.AddCommandHelp(new(name, Array.Empty<string>(), uses, description, permissions));
+            HelpHandler.AddCommandHelp(new(name, aliases.Split("|"), uses, description, permissions)); ;
         }
             
     }
