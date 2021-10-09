@@ -23,7 +23,7 @@ namespace BancoBahiaBot
 
                         switch (args[0])
                         {
-                            case "set_game":
+                            case "bot_set_game":
                                 {
                                     string text = StringUtils.GetAllRemainderTextAfter(args, 0);
 
