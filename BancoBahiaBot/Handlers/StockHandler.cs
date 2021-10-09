@@ -81,11 +81,11 @@ namespace BancoBahiaBot
                 price: 370
             );
 
-        public static Stock brocolisCompany = new
+        public static Stock brocolisFoodCompany = new
             (
-                id: "brocolisCompany",
-                name: "Brocolis Company",
-                shortName: "BCLC",
+                id: "brocolisFoodCompany",
+                name: "Brocolis Food Company",
+                shortName: "BCFC",
                 price: 420
             );
 
@@ -109,7 +109,7 @@ namespace BancoBahiaBot
             stocks.Add(lipezSportsCompany);
             stocks.Add(joteiElectronicsInc);
             stocks.Add(monoWavesLtda);
-            stocks.Add(brocolisCompany);
+            stocks.Add(brocolisFoodCompany);
             stocks.Add(brucesInc);
 
             stocksUpdaterThread = new(StocksUpdater);
