@@ -1,4 +1,5 @@
 ﻿using BancoBahiaBot.Utils;
+
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;

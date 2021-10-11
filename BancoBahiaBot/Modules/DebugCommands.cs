@@ -1,12 +1,12 @@
-﻿using BancoBahiaBot.Utils;
-using Discord;
+﻿using Discord;
 using Discord.Audio;
 using Discord.Commands;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Fortnite_API;
 
 namespace BancoBahiaBot.Modules
 {
@@ -230,6 +230,28 @@ namespace BancoBahiaBot.Modules
         async void Callback(IUser user, object param)
         {
             await Context.Channel.SendMessageAsync($"debug reac {param}, por: " + user.Mention);
+        }
+
+        FortniteApiClient ftApi = new();
+
+        [Command("ft_s")]
+        public async Task FortniteStatsCommand([Remainder]string nickname)
+        {
+            var stats = await ftApi.V2.Stats.GetBrV2Async(x =>
+            {
+                x.Name = nickname;
+                x.ImagePlatform = Fortnite_API.Objects.V1.BrStatsV2V1ImagePlatform.All;
+            });
+
+            await Context.Channel.SendMessageAsync(stats.Data.Image.ToString());
+        }
+
+        [Command("ft_m")]
+        public async Task FortniteMapCommand()
+        {
+            var map = await ftApi.V1.Map.GetAsync(Fortnite_API.Objects.GameLanguage.PT_BR);
+
+            await Context.Channel.SendMessageAsync(map.Data.Images.POIs.ToString());
         }
 
         #region audio
