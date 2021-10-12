@@ -232,12 +232,12 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync($"debug reac {param}, por: " + user.Mention);
         }
 
-        FortniteApiClient ftApi = new();
+        FortniteApiClient fnApi = new();
 
-        [Command("ft_s")]
+        [Command("fn_s")]
         public async Task FortniteStatsCommand([Remainder]string nickname)
         {
-            var stats = await ftApi.V2.Stats.GetBrV2Async(x =>
+            var stats = await fnApi.V2.Stats.GetBrV2Async(x =>
             {
                 x.Name = nickname;
                 x.ImagePlatform = Fortnite_API.Objects.V1.BrStatsV2V1ImagePlatform.All;
@@ -246,10 +246,10 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync(stats.Data.Image.ToString());
         }
 
-        [Command("ft_m")]
+        [Command("fn_m")]
         public async Task FortniteMapCommand()
         {
-            var map = await ftApi.V1.Map.GetAsync(Fortnite_API.Objects.GameLanguage.PT_BR);
+            var map = await fnApi.V1.Map.GetAsync(Fortnite_API.Objects.GameLanguage.PT_BR);
 
             await Context.Channel.SendMessageAsync(map.Data.Images.POIs.ToString());
         }
@@ -257,18 +257,18 @@ namespace BancoBahiaBot.Modules
         #region audio
 
         [Command("audio"), DoNotEnterTypingState()]
-        public async Task JoinChannel(IVoiceChannel channel = null)
+        public async Task JoinChannel([Remainder]string music)
         {
             if(Context.User.Id != 345680337277288448) return;
 
             // Get the audio channel
-            channel = channel ?? (Context.User as IGuildUser)?.VoiceChannel;
-            if (channel == null) { await Context.Channel.SendMessageAsync("User must be in a voice channel, or a voice channel must be passed as an argument."); return; }
+            var channel = (Context.User as IGuildUser).VoiceChannel;
+            if (channel == null) { await Context.Channel.SendMessageAsync("User must be in a voice channel."); return; }
             
             // For the next step with transmitting audio, you would want to pass this Audio Client in to a service.
             var audioClient = await channel.ConnectAsync();
             
-            await SendAsync(audioClient, "Sounds/capitao.mp3");
+            await SendAsync(audioClient, $"Sounds/{music}.mp3");
         }
 
         private Process CreateStream(string path)
@@ -276,7 +276,7 @@ namespace BancoBahiaBot.Modules
             return Process.Start(new ProcessStartInfo
             {
                 FileName = "ffmpeg.exe",
-                Arguments = $"-hide_banner -loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
+                Arguments = $"-hide_banner -vol 8192 -loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
             });

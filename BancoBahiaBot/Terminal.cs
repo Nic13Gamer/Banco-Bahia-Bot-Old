@@ -59,8 +59,8 @@ namespace BancoBahiaBot
 
                                     break;
                                 }
-                            }
                         }
+                    }
                     catch (Exception e)
                     {
                         WriteLine(e.Message, MessageType.CMD);
