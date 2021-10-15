@@ -39,6 +39,5 @@ namespace BancoBahiaBot.Modules
 
             await Context.Channel.SendMessageAsync(gifs[random.Next(0, gifs.Length)]);
         }
-
     }
 }

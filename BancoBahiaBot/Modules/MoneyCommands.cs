@@ -16,7 +16,7 @@ namespace BancoBahiaBot.Modules
                 uses: "atm||{prefix}atm <usuário>",
                 description: "Mostra o seu dinheiro ou o de outro usuário"
             )]
-        public async Task AtmCommand(IGuildUser mention)
+        public async Task AtmCommand(IGuildUser mention = null)
         {
             var discordUser = (IUser)mention ?? Context.User;
             if (discordUser.IsBot) return;

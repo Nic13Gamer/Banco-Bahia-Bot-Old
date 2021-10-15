@@ -16,14 +16,14 @@ namespace BancoBahiaBot.Modules
                 uses: "profile||{prefix}profile <usuário>",
                 description: "Mostra o seu perfil ou o de outro usuário"
             )]
-        public async Task ProfileCommand(IGuildUser mention)
+        public async Task ProfileCommand(IGuildUser mention = null)
         {
             var user = (IUser)mention ?? Context.User;
             if (user.IsBot) return;
 
             var content = new Dictionary<string, string>
             {
-                { "profilePic", user.GetAvatarUrl(size: 512) },
+                { "profilePic", user.GetAvatarUrl(size: 512) ?? user.GetDefaultAvatarUrl() },
                 { "username", user.Username },
                 { "money", UserHandler.GetUser(user.Id).money.ToString() }
             };
