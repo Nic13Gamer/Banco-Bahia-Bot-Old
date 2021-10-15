@@ -16,21 +16,13 @@ namespace BancoBahiaBot.Modules
                 uses: "atm||{prefix}atm <usuário>",
                 description: "Mostra o seu dinheiro ou o de outro usuário"
             )]
-        public async Task AtmCommand()
-        {
-            User user = UserHandler.GetUser(Context.User.Id);
-            string reply = $"{Context.User.Mention} tem {user.money} de dinheiro!";
-
-            await Context.Channel.SendMessageAsync(reply);
-        }
-
-        [Command("Atm"), Alias("Money")]
         public async Task AtmCommand(IGuildUser mention)
         {
-            if (mention.IsBot) return;
+            var discordUser = (IUser)mention ?? Context.User;
+            if (discordUser.IsBot) return;
 
-            User user = UserHandler.GetUser(mention.Id);
-            string reply = $"{mention.Mention} tem {user.money} de dinheiro!";
+            User user = UserHandler.GetUser(discordUser.Id);
+            string reply = $"{discordUser.Mention} tem {user.money} de dinheiro!";
 
             await Context.Channel.SendMessageAsync(reply);
         }

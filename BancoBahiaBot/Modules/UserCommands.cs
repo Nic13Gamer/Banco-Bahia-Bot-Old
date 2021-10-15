@@ -16,13 +16,16 @@ namespace BancoBahiaBot.Modules
                 uses: "profile||{prefix}profile <usuário>",
                 description: "Mostra o seu perfil ou o de outro usuário"
             )]
-        public async Task ProfileCommand()
+        public async Task ProfileCommand(IGuildUser mention)
         {
+            var user = (IUser)mention ?? Context.User;
+            if (user.IsBot) return;
+
             var content = new Dictionary<string, string>
             {
-                { "profilePic", Context.User.GetAvatarUrl(size: 512) },
-                { "username", Context.User.Username },
-                { "money", UserHandler.GetUser(Context.User.Id).money.ToString() }
+                { "profilePic", user.GetAvatarUrl(size: 512) },
+                { "username", user.Username },
+                { "money", UserHandler.GetUser(user.Id).money.ToString() }
             };
 
             HttpResponse response = await NetUtils.BotApiRequest("profile", content);
@@ -30,27 +33,7 @@ namespace BancoBahiaBot.Modules
             if(response.status != 200)
                 return;
 
-            await Context.Channel.SendFileAsync(response.content, $"Perfil de {Context.User.Mention}");
-        }
-
-        [Command("Profile"), Alias("Perfil")]
-        public async Task ProfileCommand(IGuildUser mention)
-        {
-            if (mention.IsBot) return;
-
-            var content = new Dictionary<string, string>
-            {
-                { "profilePic", mention.GetAvatarUrl(size: 512) },
-                { "username", mention.Username },
-                { "money", UserHandler.GetUser(mention.Id).money.ToString() }
-            };
-
-            HttpResponse response = await NetUtils.BotApiRequest("profile", content);
-
-            if (response.status != 200)
-                return;
-
-            await Context.Channel.SendFileAsync(response.content, $"Perfil de {mention.Mention}");
+            await Context.Channel.SendFileAsync(response.content, $"Perfil de {user.Mention}");
         }
     }
 }
