@@ -23,7 +23,7 @@ namespace BancoBahiaBot
         {
             Console.Title = "Bot Banco Bahia";
 
-            Client = new DiscordSocketClient();
+            Client = new();
 
             await Client.LoginAsync(TokenType.Bot, BotOptions.token);
             await Client.StartAsync();

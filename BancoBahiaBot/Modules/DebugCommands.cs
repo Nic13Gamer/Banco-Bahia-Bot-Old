@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 using Fortnite_API;
 
+using System.Net.Http;
+using Newtonsoft.Json;
+
 namespace BancoBahiaBot.Modules
 {
     public class DebugCommands : ModuleBase<SocketCommandContext>
@@ -232,6 +235,66 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync($"debug reac {param}, por: " + user.Mention);
         }
 
+        #region Genshin Impact API 
+
+        public static readonly HttpClient httpClient = new();
+
+        [Command("gi_w")]
+        public async Task GenshinImpactCharactersCommand(string weaponString)
+        {
+            var httpResponse = await httpClient.GetAsync($"https://api.genshin.dev/weapons/{weaponString}");
+
+            GenshinWeapon weapon = JsonConvert.DeserializeObject<GenshinWeapon>(await httpResponse.Content.ReadAsStringAsync());
+
+            EmbedBuilder embed = new EmbedBuilder
+            {
+                Title = "**ARMA DE GENSHIN IMPACT**",
+                Color = Color.Orange
+            }.WithAuthor(Context.User).WithCurrentTimestamp().WithFooter(footer => footer.Text = weapon.name);
+
+            embed.AddField("Nome",
+                    $"`{weapon.name}`");
+
+            embed.AddField("Tipe",
+                    $"`{weapon.type}`");
+
+            embed.AddField("Raridade",
+                    $"`{weapon.rarity}`");
+
+            embed.AddField("Ataque base",
+                    $"`{weapon.baseAttack}`");
+
+            embed.AddField("subStat",
+                    $"`{weapon.subStat}`");
+
+            embed.AddField("Nome passivo",
+                    $"`{weapon.passiveName}`");
+
+            embed.AddField("Descricao passiva",
+                    $"`{weapon.passiveDesc}`");
+
+            embed.AddField("Localizacao",
+                    $"`{weapon.location}`");
+
+            await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
+        }
+
+        class GenshinWeapon
+        {
+            public string name;
+            public string type;
+            public string rarity;
+            public string baseAttack;
+            public string subStat;
+            public string passiveName;
+            public string passiveDesc;
+            public string location;
+        }
+
+        #endregion
+
+        #region Fornite API
+
         FortniteApiClient fnApi = new();
 
         [Command("fn_s")]
@@ -253,6 +316,8 @@ namespace BancoBahiaBot.Modules
 
             await Context.Channel.SendMessageAsync(map.Data.Images.POIs.ToString());
         }
+
+        #endregion
 
         #region audio
 
