@@ -355,7 +355,7 @@ namespace BancoBahiaBot.Modules
             using (var discord = client.CreatePCMStream(AudioApplication.Mixed))
             {
                 try { await output.CopyToAsync(discord); }
-                finally { await discord.FlushAsync(); }
+                finally { await discord.FlushAsync(); ffmpeg.Close(); }
             }
         }
 
