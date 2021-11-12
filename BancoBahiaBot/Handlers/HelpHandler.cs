@@ -117,7 +117,7 @@ namespace BancoBahiaBot
         /// <param name="permissions">Permissions needed to run the command.</param>
         public CommandHelpAttribute(string name, string aliases, string uses, string description, GuildPermission[] permissions = null)
         {
-            HelpHandler.AddCommandHelp(new(name, aliases.Split("|"), uses, description, permissions)); ;
+            HelpHandler.AddCommandHelp(new(name, aliases.Split("|"), uses, description, permissions));
         }
             
     }
