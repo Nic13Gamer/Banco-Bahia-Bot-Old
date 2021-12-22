@@ -255,7 +255,7 @@ namespace BancoBahiaBot.Modules
             embed.AddField("Nome",
                     $"`{weapon.name}`");
 
-            embed.AddField("Tipe",
+            embed.AddField("Tipo",
                     $"`{weapon.type}`");
 
             embed.AddField("Raridade",
@@ -321,7 +321,7 @@ namespace BancoBahiaBot.Modules
 
         #region audio
 
-        [Command("audio"), DoNotEnterTypingState()]
+        [Command("audio"), DoNotEnterTypingState]
         public async Task JoinChannel([Remainder]string music)
         {
             if(Context.User.Id != 345680337277288448) return;
