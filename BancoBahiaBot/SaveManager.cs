@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace BancoBahiaBot
 {
-    public abstract class SaveManager
+    public static class SaveManager
     {
         static readonly string botDataJsonPath = Bot.DATA_PATH + "/botData.json";
 
