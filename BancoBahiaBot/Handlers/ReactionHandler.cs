@@ -12,7 +12,7 @@ namespace BancoBahiaBot
 
         static readonly List<ReactionRequest> pendingReactionRequests = new();
 
-        static Task ReactionAdded(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+        private static Task ReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
             if (reaction.User.Value.IsBot) return null;
 

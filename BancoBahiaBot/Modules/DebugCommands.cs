@@ -1,15 +1,13 @@
 ﻿using Discord;
 using Discord.Audio;
 using Discord.Commands;
+using Discord.WebSocket;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 using Fortnite_API;
-
-using System.Net.Http;
-using Newtonsoft.Json;
 
 namespace BancoBahiaBot.Modules
 {
@@ -225,73 +223,28 @@ namespace BancoBahiaBot.Modules
         [Command("reac")]
         public Task ReacCommand()
         {
-            ReactionHandler.AddReactionRequest(Callback, new("✅"), Context.Message, "dababy", true);
+            ReactionHandler.AddReactionRequest(async (IUser user, object param) =>
+            {
+                await Context.Channel.SendMessageAsync($"debug reac {param}, por: " + user.Mention);
+            }, new("✅"), Context.Message, "dababy", true);
             
             return null;
         }
 
-        async void Callback(IUser user, object param)
+        [Command("btn")]
+        public async Task BtnCommand()
         {
-            await Context.Channel.SendMessageAsync($"debug reac {param}, por: " + user.Mention);
-        }
+            var builder = new ComponentBuilder();
 
-        #region Genshin Impact API 
+            builder.WithButton("yummy", "yummy-id");
 
-        public static readonly HttpClient httpClient = new();
-
-        [Command("gi_w")]
-        public async Task GenshinImpactCharactersCommand(string weaponString)
-        {
-            var httpResponse = await httpClient.GetAsync($"https://api.genshin.dev/weapons/{weaponString}");
-
-            GenshinWeapon weapon = JsonConvert.DeserializeObject<GenshinWeapon>(await httpResponse.Content.ReadAsStringAsync());
-
-            EmbedBuilder embed = new EmbedBuilder
+            Bot.Client.ButtonExecuted += async (SocketMessageComponent button) =>
             {
-                Title = "**ARMA DE GENSHIN IMPACT**",
-                Color = Color.Orange
-            }.WithAuthor(Context.User).WithCurrentTimestamp().WithFooter(footer => footer.Text = weapon.name);
+                await button.RespondAsync($"{button.User.Mention} has clicked {button.Data.CustomId}");
+            };
 
-            embed.AddField("Nome",
-                    $"`{weapon.name}`");
-
-            embed.AddField("Tipo",
-                    $"`{weapon.type}`");
-
-            embed.AddField("Raridade",
-                    $"`{weapon.rarity}`");
-
-            embed.AddField("Ataque base",
-                    $"`{weapon.baseAttack}`");
-
-            embed.AddField("subStat",
-                    $"`{weapon.subStat}`");
-
-            embed.AddField("Nome passivo",
-                    $"`{weapon.passiveName}`");
-
-            embed.AddField("Descricao passiva",
-                    $"`{weapon.passiveDesc}`");
-
-            embed.AddField("Localizacao",
-                    $"`{weapon.location}`");
-
-            await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
+            await Context.Channel.SendMessageAsync("debug btn", components: builder.Build());
         }
-
-        class GenshinWeapon
-        {
-            public string name;
-            public string type;
-            public string rarity;
-            public string baseAttack;
-            public string subStat;
-            public string passiveName;
-            public string passiveDesc;
-            public string location;
-        }
-
-        #endregion
 
         #region Fornite API
 
