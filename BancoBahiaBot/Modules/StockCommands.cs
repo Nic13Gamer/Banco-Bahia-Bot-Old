@@ -18,7 +18,7 @@ namespace BancoBahiaBot.Modules
 
             switch (args[0])
             {
-                case "portifolio" or "portfolio":
+                case "portfolio":
                     {
                         EmbedBuilder embed = new EmbedBuilder
                         {
