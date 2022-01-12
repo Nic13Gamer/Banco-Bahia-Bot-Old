@@ -104,17 +104,15 @@ namespace BancoBahiaBot
             return null;
         }
 
-        public static UserProperty GetUserProperty(string property, User user)
+        public static UserProperty GetUserProperty(Property property, User user)
         {
-            Property chosenProperty = GetProperty(property);
-
-            if (chosenProperty == null)
+            if (property == null)
                 return null;
 
             UserProperty userProperty = null;
             foreach (UserProperty _userProperty in user.properties)
             {
-                if (_userProperty.property == chosenProperty)
+                if (_userProperty.property == property)
                 {
                     userProperty = _userProperty;
                     break;
