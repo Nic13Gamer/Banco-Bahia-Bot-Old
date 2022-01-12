@@ -32,7 +32,6 @@ namespace BancoBahiaBot.Modules
                         {
                             Stock stock = userStock.stock;
 
-                            string chartData = GetStockLastPricesString(stock);
                             string wentUpEmoji = stock.wentUp ? ":arrow_up:" : ":arrow_down:";
                             string stockSuccessEmoji = stock.price * userStock.quantity > userStock.highBuyPrice * userStock.quantity ? ":green_circle:" : ":red_circle:";
 
@@ -192,7 +191,6 @@ namespace BancoBahiaBot.Modules
 
             foreach (Stock stock in StockHandler.GetStocks())
             {
-                string chartData = GetStockLastPricesString(stock);
                 string wentUpEmoji = stock.wentUp ? ":arrow_up:" : ":arrow_down:";
 
                 embed.AddField($"{stock.name} `({stock.shortName})` {wentUpEmoji}",
@@ -202,7 +200,7 @@ namespace BancoBahiaBot.Modules
             await Context.Channel.SendMessageAsync(Context.User.Mention, embed: embed.Build());
         }
 
-        static string GetStockLastPricesString(Stock stock)
+        /*static string GetStockLastPricesString(Stock stock)
         {
             string data = string.Empty;
             foreach (int price in stock.lastPrices)
@@ -214,6 +212,6 @@ namespace BancoBahiaBot.Modules
             }
 
             return data;
-        }
+        }*/ // use in stock info
     }
 }
