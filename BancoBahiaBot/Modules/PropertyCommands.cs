@@ -8,15 +8,17 @@ namespace BancoBahiaBot.Modules
     public class PropertyCommands : ModuleBase<SocketCommandContext>
     {
         [Command("Collect"), Alias("Coletar")]
-        public async Task CollectCommand([Remainder]string property)
+        public async Task CollectCommand([Remainder]string propertyString)
         {
             User user = UserHandler.GetUser(Context.User.Id);
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
-            if(PropertyHandler.GetProperty(property) == null)
+            Property property = PropertyHandler.GetProperty(propertyString);
+            if(property == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
                 return;
             }
+
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
             if (userProperty == null)
             {
                 await Context.Channel.SendMessageAsync("Você não possui essa propriedade!");
@@ -124,54 +126,57 @@ namespace BancoBahiaBot.Modules
         }
 
         [Command("Buy"), Alias("Comprar")]
-        public async Task BuyCommand([Remainder]string property)
+        public async Task BuyCommand([Remainder]string propertyString)
         {
             User user = UserHandler.GetUser(Context.User.Id);
 
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
-            if (PropertyHandler.GetProperty(property) == null)
+            Property property = PropertyHandler.GetProperty(propertyString);
+            if (property == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
                 return;
             }
+
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
             if (userProperty != null)
             {
                 await Context.Channel.SendMessageAsync("Você já possui essa propriedade!");
                 return;
             }
 
-            Property chosenProperty = PropertyHandler.GetProperty(property);
-
-            if (user.money < chosenProperty.price)
+            if (user.money < property.price)
             {
-                await Context.Channel.SendMessageAsync($"{Context.User.Mention}, você não tem dinheiro suficiente! Preço: {chosenProperty.price}");
+                await Context.Channel.SendMessageAsync($"{Context.User.Mention}, você não tem dinheiro suficiente! Preço: {property.price}");
                 return;
             }
 
-            user.money -= chosenProperty.price;
+            user.money -= property.price;
 
             UserProperty newProperty = new
                 (
-                    chosenProperty,
+                    property,
                     DateTime.Now.AddDays(-1)
                 );
 
             PropertyHandler.AddPropertyToUser(user, newProperty);
 
-            await Context.Channel.SendMessageAsync($"{chosenProperty.name} comprada com sucesso!");
-            Terminal.WriteLine($"{Context.User} ({Context.User.Id}) bought {chosenProperty.id} succesfully!", Terminal.MessageType.INFO);
+            await Context.Channel.SendMessageAsync($"{property.name} comprada com sucesso!");
+            Terminal.WriteLine($"{Context.User} ({Context.User.Id}) bought {property.id} succesfully!", Terminal.MessageType.INFO);
         }
 
         [Command("SellProperty"), Alias("VenderPropriedade")]
-        public async Task SellPropertyCommand([Remainder] string property)
+        public async Task SellPropertyCommand([Remainder] string propertyString)
         {
             User user = UserHandler.GetUser(Context.User.Id);
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
-            if (PropertyHandler.GetProperty(property) == null)
+
+            Property property = PropertyHandler.GetProperty(propertyString);
+            if (property == null)
             {
                 await Context.Channel.SendMessageAsync("Essa propriedade não existe!");
                 return;
             }
+
+            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
             if (userProperty == null)
             {
                 await Context.Channel.SendMessageAsync("Você não possui essa propriedade!");
@@ -286,7 +291,7 @@ namespace BancoBahiaBot.Modules
                 return;
             }
 
-            UserProperty userProperty = PropertyHandler.GetUserProperty(property, UserHandler.GetUser(Context.User.Id));
+            UserProperty userProperty = PropertyHandler.GetUserProperty(chosenProperty, UserHandler.GetUser(Context.User.Id));
             string ownedEmoji = userProperty == null ? ":x:" : ":white_check_mark:";
 
             EmbedBuilder embed = new EmbedBuilder
