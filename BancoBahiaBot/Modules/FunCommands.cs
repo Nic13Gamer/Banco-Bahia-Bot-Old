@@ -13,7 +13,7 @@ namespace BancoBahiaBot.Modules
                 name: "yes",
                 aliases: "sim",
                 uses: "yes",
-                description: "Mande algum gif de sim, até aqueles mais estranhos"
+                description: "Mande algum gif para dizer sim, até aqueles mais estranhos"
             )]
         public async Task YesCommand()
         {
